@@ -24,6 +24,10 @@ class MyDocument extends Document<Props> {
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
           <meta name="msapplication-TileColor" content="#ff0000" />
           <meta name="theme-color" content="#ffffff" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+            rel="stylesheet"
+          />
         </Head>
 
         {/* Keep the embed hidden till parent initializes and gives it the appropriate styles */}

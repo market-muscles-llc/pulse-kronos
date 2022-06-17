@@ -124,6 +124,8 @@ const Layout = ({
   const router = useRouter();
 
   const { t } = useLocale();
+  const query = useMeQuery();
+  const user = query.data;
   const navigation = [
     {
       name: t("event_types_page_title"),
@@ -173,7 +175,7 @@ const Layout = ({
   return (
     <>
       <HeadSeo
-        title={pageTitle ?? "Cal.com"}
+        title={pageTitle ?? "PulseAppt.com"}
         description={props.subtitle ? props.subtitle?.toString() : ""}
         nextSeoProps={{
           nofollow: true,
@@ -203,7 +205,22 @@ const Layout = ({
                       <Logo small icon />
                     </a>
                   </Link>
-                  <nav className="mt-2 flex-1 space-y-1 bg-white px-2 lg:mt-5">
+                  <Link href="https://movewithpulse.com/">
+                    <a
+                      aria-label="Back"
+                      className={classNames(
+                        "group mx-2 my-2 flex items-center rounded-sm px-2 py-2 text-sm font-medium text-neutral-500 hover:bg-gray-50 hover:text-neutral-900"
+                      )}>
+                      <ArrowLeftIcon
+                        className={classNames(
+                          "h-5 w-5 flex-shrink-0 text-neutral-400 group-hover:text-neutral-500 ltr:mr-3 rtl:ml-3"
+                        )}
+                        aria-hidden="true"
+                      />
+                      <span className="hidden lg:inline">Back to Pulse</span>
+                    </a>
+                  </Link>
+                  <nav className="mt-2 space-y-1 bg-white px-2 lg:mt-5">
                     {navigation.map((item) => (
                       <Fragment key={item.name}>
                         <Link href={item.href}>
@@ -247,11 +264,17 @@ const Layout = ({
                       </Fragment>
                     ))}
                   </nav>
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user.username}`}
+                    className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900">
+                    <ExternalLinkIcon className="h-5 w-5 text-gray-500 ltr:mr-3 rtl:ml-3" />{" "}
+                    {t("view_public_page")}
+                  </a>
                 </div>
                 <TrialBanner />
-                <div
-                  className="rounded-sm pt-2 pb-2 pl-3 pr-2 hover:bg-gray-100 lg:mx-2 lg:pl-2"
-                  data-testid="user-dropdown-trigger">
+                <div className="pt-2 pb-2" data-testid="user-dropdown-trigger">
                   <span className="hidden lg:inline">
                     <UserDropdown />
                   </span>
@@ -445,7 +468,7 @@ export default function Shell(props: LayoutProps) {
   return (
     <>
       <Theme />
-      <CustomBranding lightVal={user?.brandColor} darkVal={user?.darkBrandColor} />
+      <CustomBranding lightVal={"#0B5DEA"} darkVal={"#F7F8FA"} />
       <MemoizedLayout plan={user?.plan} status={status} {...props} isLoading={isLoading} />
     </>
   );
@@ -461,161 +484,62 @@ function UserDropdown({ small }: { small?: boolean }) {
     },
   });
   const utils = trpc.useContext();
-  const [helpOpen, setHelpOpen] = useState(false);
 
   return (
-    <Dropdown onOpenChange={() => setHelpOpen(false)}>
-      <DropdownMenuTrigger asChild>
-        <button className="group flex w-full cursor-pointer appearance-none items-center text-left">
-          <span
-            className={classNames(
-              small ? "h-8 w-8" : "h-10 w-10",
-              "relative flex-shrink-0 rounded-full bg-gray-300  ltr:mr-3 rtl:ml-3"
-            )}>
-            {
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                className="rounded-full"
-                src={WEBAPP_URL + "/" + user?.username + "/avatar.png"}
-                alt={user?.username || "Nameless User"}
-              />
-            }
-            {!user?.away && (
-              <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></div>
-            )}
-            {user?.away && (
-              <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-yellow-500"></div>
-            )}
-          </span>
-          {!small && (
-            <span className="flex flex-grow items-center truncate">
-              <span className="flex-grow truncate text-sm">
-                <span className="block truncate font-medium text-gray-900">
-                  {user?.username || "Nameless User"}
-                </span>
-                <span className="block truncate font-normal text-neutral-500">
-                  {user?.username ? `cal.com/${user.username}` : "No public page"}
-                </span>
-              </span>
-              <SelectorIcon
-                className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                aria-hidden="true"
-              />
-            </span>
+    <>
+      {/* <div className="flex w-full appearance-none items-center text-left">
+        <span
+          className={classNames(
+            small ? "h-8 w-8" : "h-10 w-10",
+            "relative flex-shrink-0 rounded-full bg-gray-300  ltr:mr-3 rtl:ml-3"
+          )}>
+          {
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="rounded-full"
+              src={WEBAPP_URL + "/" + user?.username + "/avatar.png"}
+              alt={user?.username || "Nameless User"}
+            />
+          }
+          {!user?.away && (
+            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></div>
           )}
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent portalled={true}>
-        {helpOpen ? (
-          <HelpMenuItem closeHelp={() => setHelpOpen(false)} />
-        ) : (
-          <>
-            <DropdownMenuItem>
-              <a
-                onClick={() => {
-                  mutation.mutate({ away: !user?.away });
-                  utils.invalidateQueries("viewer.me");
-                }}
-                className="flex min-w-max cursor-pointer px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                <MoonIcon
-                  className={classNames(
-                    user?.away
-                      ? "text-purple-500 group-hover:text-purple-700"
-                      : "text-gray-500 group-hover:text-gray-700",
-                    "h-5 w-5 flex-shrink-0 ltr:mr-3 rtl:ml-3"
-                  )}
-                  aria-hidden="true"
-                />
-                {user?.away ? t("set_as_free") : t("set_as_away")}
-              </a>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="h-px bg-gray-200" />
-            {user?.username && (
-              <DropdownMenuItem>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user.username}`}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700">
-                  <ExternalLinkIcon className="h-5 w-5 text-gray-500 ltr:mr-3 rtl:ml-3" />{" "}
-                  {t("view_public_page")}
-                </a>
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator className="h-px bg-gray-200" />
-            <DropdownMenuItem>
-              <a
-                href="https://cal.com/slack"
-                target="_blank"
-                rel="noreferrer"
-                className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-                <svg
-                  viewBox="0 0 2447.6 2452.5"
-                  className={classNames(
-                    "text-gray-500 group-hover:text-gray-700",
-                    "mt-0.5 h-4 w-4 flex-shrink-0 ltr:mr-4 rtl:ml-4"
-                  )}
-                  xmlns="http://www.w3.org/2000/svg">
-                  <g clipRule="evenodd" fillRule="evenodd">
-                    <path
-                      d="m897.4 0c-135.3.1-244.8 109.9-244.7 245.2-.1 135.3 109.5 245.1 244.8 245.2h244.8v-245.1c.1-135.3-109.5-245.1-244.9-245.3.1 0 .1 0 0 0m0 654h-652.6c-135.3.1-244.9 109.9-244.8 245.2-.2 135.3 109.4 245.1 244.7 245.3h652.7c135.3-.1 244.9-109.9 244.8-245.2.1-135.4-109.5-245.2-244.8-245.3z"
-                      fill="currentColor"></path>
-                    <path
-                      d="m2447.6 899.2c.1-135.3-109.5-245.1-244.8-245.2-135.3.1-244.9 109.9-244.8 245.2v245.3h244.8c135.3-.1 244.9-109.9 244.8-245.3zm-652.7 0v-654c.1-135.2-109.4-245-244.7-245.2-135.3.1-244.9 109.9-244.8 245.2v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.3z"
-                      fill="currentColor"></path>
-                    <path
-                      d="m1550.1 2452.5c135.3-.1 244.9-109.9 244.8-245.2.1-135.3-109.5-245.1-244.8-245.2h-244.8v245.2c-.1 135.2 109.5 245 244.8 245.2zm0-654.1h652.7c135.3-.1 244.9-109.9 244.8-245.2.2-135.3-109.4-245.1-244.7-245.3h-652.7c-135.3.1-244.9 109.9-244.8 245.2-.1 135.4 109.4 245.2 244.7 245.3z"
-                      fill="currentColor"></path>
-                    <path
-                      d="m0 1553.2c-.1 135.3 109.5 245.1 244.8 245.2 135.3-.1 244.9-109.9 244.8-245.2v-245.2h-244.8c-135.3.1-244.9 109.9-244.8 245.2zm652.7 0v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.2v-653.9c.2-135.3-109.4-245.1-244.7-245.3-135.4 0-244.9 109.8-244.8 245.1 0 0 0 .1 0 0"
-                      fill="currentColor"></path>
-                  </g>
-                </svg>
-                {t("join_our_slack")}
-              </a>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://cal.com/roadmap"
-                className="flex items-center px-4 py-2 text-sm text-gray-700">
-                <MapIcon className="h-5 w-5 text-gray-500 ltr:mr-3 rtl:ml-3" /> {t("visit_roadmap")}
-              </a>
-            </DropdownMenuItem>
-
-            <button
-              className="flex w-full px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-gray-100 hover:text-gray-900"
-              onClick={() => setHelpOpen(true)}>
-              <QuestionMarkCircleIcon
-                className={classNames(
-                  "text-gray-500 group-hover:text-neutral-500",
-                  "h-5 w-5 flex-shrink-0 ltr:mr-3"
-                )}
-                aria-hidden="true"
-              />
-
-              {t("help")}
-            </button>
-
-            <DropdownMenuSeparator className="h-px bg-gray-200" />
-            <DropdownMenuItem>
-              <a
-                onClick={() => signOut({ callbackUrl: "/auth/logout" })}
-                className="flex cursor-pointer px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900">
-                <LogoutIcon
-                  className={classNames(
-                    "text-gray-500 group-hover:text-gray-700",
-                    "h-5 w-5 flex-shrink-0 ltr:mr-3 rtl:ml-3"
-                  )}
-                  aria-hidden="true"
-                />
-                {t("sign_out")}
-              </a>
-            </DropdownMenuItem>
-          </>
+          {user?.away && (
+            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-yellow-500"></div>
+          )}
+        </span>
+        {!small && (
+          <span className="flex flex-grow items-center truncate">
+            <span className="flex-grow truncate text-sm">
+              <span className="block truncate font-medium text-gray-900">
+                {user?.username || "Nameless User"}
+              </span>
+            </span>
+          </span>
         )}
-      </DropdownMenuContent>
-    </Dropdown>
+      </div> */}
+      <a
+        onClick={() => {
+          mutation.mutate({ away: !user?.away });
+          utils.invalidateQueries("viewer.me");
+        }}
+        className="flex min-w-max cursor-pointer flex-col px-2 py-2 hover:bg-gray-100 hover:text-gray-900">
+        <span className="flex flex-col items-center lg:flex-row">
+          <MoonIcon
+            className={classNames(
+              user?.away
+                ? "text-purple-500 group-hover:text-purple-700"
+                : "text-gray-500 group-hover:text-gray-700",
+              "h-5 w-5 flex-shrink-0 ltr:mr-2 rtl:ml-2"
+            )}
+            aria-hidden="true"
+          />
+          <span className="block">{user?.away ? "Away" : "Available"}</span>
+        </span>
+        <span className="mt-2 hidden text-sm text-neutral-400 lg:block">
+          {user?.away ? t("set_as_free") : t("set_as_away")}
+        </span>
+      </a>
+    </>
   );
 }

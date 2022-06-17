@@ -4,14 +4,14 @@ export default function Logo({ small, icon }: { small?: boolean; icon?: boolean 
       <strong>
         {icon ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="mx-auto w-9" alt="Cal" title="Cal" src="/cal-com-icon-white.svg" />
+          <img className="mx-auto w-8" alt="Move with Pulse" title="Move with Pulse" src="/pulse-icon.svg" />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            className={small ? "h-4 w-auto" : "h-5 w-auto"}
-            alt="Cal"
-            title="Cal"
-            src="/calendso-logo-white-word.svg"
+            className={small ? "h-8 w-auto" : "h-10 w-auto"}
+            alt="Move with Pulse"
+            title="Move with Pulse"
+            src="/pulse-logo.svg"
           />
         )}
       </strong>

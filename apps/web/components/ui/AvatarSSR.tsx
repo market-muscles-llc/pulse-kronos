@@ -20,7 +20,7 @@ function defaultAvatarSrc(md5: string) {
 export function AvatarSSR(props: AvatarProps) {
   const { user, size } = props;
   const nameOrUsername = user.name || user.username || "";
-  const className = classNames("rounded-full", props.className, size && `h-${size} w-${size}`);
+  const className = classNames(props.className, size && `h-${size} w-auto`);
   let imgSrc;
   const alt = props.alt || nameOrUsername;
   if (user.avatar) {

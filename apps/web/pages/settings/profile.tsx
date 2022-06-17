@@ -229,7 +229,7 @@ function SettingsView(props: ComponentProps<typeof Settings> & { localeProp: str
                 />
               </div>
             </div>
-            <div className="block sm:flex">
+            <div className="hidden">
               <div className="mb-6 w-full sm:w-1/2">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   {t("email")}
@@ -442,9 +442,9 @@ function SettingsView(props: ComponentProps<typeof Settings> & { localeProp: str
                 </div>
               </div>
             </div>
-            <h3 className="text-md mt-7 font-bold leading-6 text-red-700">{t("danger_zone")}</h3>
+            <h3 className="text-md mt-7 hidden font-bold leading-6 text-red-700">{t("danger_zone")}</h3>
             <div>
-              <div className="relative flex items-start">
+              <div className="relative hidden items-start">
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button

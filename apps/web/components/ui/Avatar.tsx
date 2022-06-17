@@ -17,13 +17,13 @@ export type AvatarProps = {
 
 export default function Avatar(props: AvatarProps) {
   const { imageSrc, gravatarFallbackMd5, size, alt, title } = props;
-  const className = classNames("rounded-full", props.className, size && `h-${size} w-${size}`);
+  const className = classNames(props.className, size && `h-${size} w-${size}`);
   const avatar = (
     <AvatarPrimitive.Root>
       <AvatarPrimitive.Image
         src={imageSrc ?? undefined}
         alt={alt}
-        className={classNames("rounded-full", `h-auto w-${size}`, props.className)}
+        className={classNames(`w-auto h-${size}`, props.className)}
       />
       <AvatarPrimitive.Fallback delayMs={600}>
         {gravatarFallbackMd5 && (

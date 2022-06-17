@@ -14,10 +14,10 @@ export default function Apps({ appStore, categories }: InferGetStaticPropsType<t
   const { t } = useLocale();
 
   return (
-    <Shell heading={t("app_store")} subtitle={t("app_store_description")} large isPublic>
+    <Shell heading={t("app_store")}>
       <AppsShell>
-        <AppStoreCategories categories={categories} />
-        <TrendingAppsSlider items={appStore} />
+        {/* <AppStoreCategories categories={categories} /> */}
+        {/* <TrendingAppsSlider items={appStore} /> */}
         <AllApps apps={appStore} />
       </AppsShell>
     </Shell>

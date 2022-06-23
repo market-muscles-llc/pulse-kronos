@@ -20,7 +20,7 @@ export const metadata = {
   category: "video",
   slug: "daily-video",
   title: "Cal Video",
-  isGlobal: true,
+  isGlobal: false,
   email: "help@cal.com",
   locationType: LocationType.Daily,
   locationLabel: "Cal Video",

@@ -10,6 +10,11 @@ import prisma from "@lib/prisma";
 import { getTranslation } from "@server/lib/i18n";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // No authenticated API signup
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410
+  res.status(410).json({ message: "Nope" });
+  return;
+
   const t = await getTranslation(req.body.language ?? "en", "common");
 
   if (req.method !== "POST") {

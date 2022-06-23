@@ -6,6 +6,11 @@ import prisma from "@lib/prisma";
 import slugify from "@lib/slugify";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // No authenticated API signup
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410
+  res.status(410).json({ message: "Nope" });
+  return;
+
   if (req.method !== "POST") {
     return;
   }

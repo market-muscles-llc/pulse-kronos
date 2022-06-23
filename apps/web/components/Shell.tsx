@@ -126,6 +126,23 @@ const Layout = ({
   const { t } = useLocale();
   const query = useMeQuery();
   const user = query.data;
+
+  let pulseLink = process.env.NEXT_PUBLIC_CONTROL_DEFAULT_RETURN_LINK;
+
+  if (user?.metadata?.fqdn) {
+    pulseLink =
+      process.env.NEXT_PUBLIC_CONTROL_PROTOCOL +
+      user.metadata.fqdn +
+      process.env.NEXT_PUBLIC_CONTROL_RETURN_PATH;
+
+    if (!localStorage.getItem("control.returnUrl")) {
+      localStorage.setItem(
+        "control.returnUrl",
+        process.env.NEXT_PUBLIC_CONTROL_PROTOCOL + user.metadata.fqdn
+      );
+    }
+  }
+
   const navigation = [
     {
       name: t("event_types_page_title"),
@@ -205,7 +222,7 @@ const Layout = ({
                       <Logo small icon />
                     </a>
                   </Link>
-                  <Link href="https://movewithpulse.com/">
+                  <Link href={pulseLink}>
                     <a
                       aria-label="Back"
                       className={classNames(

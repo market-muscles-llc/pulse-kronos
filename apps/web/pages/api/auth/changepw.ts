@@ -7,6 +7,11 @@ import prisma from "@lib/prisma";
 import { ErrorCode, hashPassword, verifyPassword } from "../../../lib/auth";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // No authenticated API signup
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410
+  res.status(410).json({ message: "Nope" });
+  return;
+
   const session = await getSession({ req: req });
 
   if (!session || !session.user || !session.user.email) {

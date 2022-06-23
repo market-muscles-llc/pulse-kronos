@@ -172,7 +172,7 @@ if (true) {
         transporter.sendMail({
           from: `${process.env.EMAIL_FROM}` || "PulseAppt.com",
           to: identifier,
-          subject: "Your sign-in link for PulseAppt.com",
+          subject: "Your sign-in link for Cal.com",
           html: emailTemplate({
             base_url: WEBSITE_URL,
             signin_url: url,

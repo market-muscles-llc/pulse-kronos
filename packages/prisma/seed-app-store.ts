@@ -79,7 +79,7 @@ async function main() {
       client_secret: process.env.ZOOM_CLIENT_SECRET,
     });
   }
-  await createApp("jitsi", "jitsivideo", ["video"], "jitsi_video");
+  // await createApp("jitsi", "jitsivideo", ["video"], "jitsi_video");
   // Other apps
   if (process.env.HUBSPOT_CLIENT_ID && process.env.HUBSPOT_CLIENT_SECRET) {
     await createApp("hubspot", "hubspotothercalendar", ["other"], "hubspot_other_calendar", {
@@ -87,13 +87,13 @@ async function main() {
       client_secret: process.env.HUBSPOT_CLIENT_SECRET,
     });
   }
-  await createApp("wipe-my-cal", "wipemycalother", ["other"], "wipemycal_other");
+  // await createApp("wipe-my-cal", "wipemycalother", ["other"], "wipemycal_other");
   if (process.env.GIPHY_API_KEY) {
     await createApp("giphy", "giphy", ["other"], "giphy_other", {
       api_key: process.env.GIPHY_API_KEY,
     });
   }
-  await createApp("space-booking", "spacebooking", ["other"], "spacebooking_other");
+  // await createApp("space-booking", "spacebooking", ["other"], "spacebooking_other");
   if (process.env.VITAL_API_KEY && process.env.VITAL_WEBHOOK_SECRET) {
     await createApp("vital-automation", "vital", ["other"], "vital_other", {
       mode: process.env.VITAL_DEVELOPMENT_MODE || "sandbox",
@@ -109,8 +109,8 @@ async function main() {
     });
   }
   // Web3 apps
-  await createApp("huddle01", "huddle01video", ["web3", "video"], "huddle01_video");
-  await createApp("metamask", "metamask", ["web3"], "metamask_web3");
+  // await createApp("huddle01", "huddle01video", ["web3", "video"], "huddle01_video");
+  // await createApp("metamask", "metamask", ["web3"], "metamask_web3");
   // Messaging apps
   if (process.env.SLACK_CLIENT_ID && process.env.SLACK_CLIENT_SECRET && process.env.SLACK_SIGNING_SECRET) {
     await createApp("slack", "slackmessaging", ["messaging"], "slack_messaging", {

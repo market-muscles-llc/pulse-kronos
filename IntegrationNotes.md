@@ -1,20 +1,54 @@
 # Notes
 
 - Node server is running
-- Create "user" automatically from Pulse
-- How to log in automatically?
-- Whitelabel "Import from Calendly/etc."
-- Whitelabel "Connect your calendar"
+- ~~How to log in automatically? MAGIC LINK~~
 
-## Tenancy
-- Is each tenant a Cal user?
-- Can we have more than one user per tenant? What do we call those?
+## Kronos Needs
+- Login
+ - Set cookie/localStorage with tenant URL
+- Logged-out page
+ - Show "redirecting" message
+ - Look for tenant URL in localStorage, redirect to MagicLink auto-route
 
+### Webhooks
+- ~~Booking created~~
+- ~~Rescheduled~~
+- ~~Cancelled~~
+- Connected Calendar issues
+ - Failed to complete oAuth
+ - Insufficient permissions (need to check both boxes)
 
+### App Store:
+Seed app and credentials
+`npm run -w @calcom/prisma seed-app-store`
 
-### Laravel-side needs
+## Laravel-side needs
 - Connect to DB, postgres so thats cool
 - Create accounts
-- Log into Cal
-- Define a slug/prefix for calendars
+- Log into Cal - MAGIC LINK
+- Define a slug/prefix for calendars - CAL USERNAME
 
+### What to do
+- Create account in Kronos, set metadata about tenant
+- Click on link, create magic link, go to it
+ - Store cookie that says how long magic link should be assumed
+- Accept route from Kronos that says they want a MagicLink, generate it and return.
+- Models for Kronos Data
+- Notifications
+- Triggers
+- Accept Webhooks:
+
+#### Webhooks
+- Booking created
+- Rescheduled
+- Cancelled
+- Connected Calendar issues
+ - Failed to complete oAuth
+ - Insufficient permissions (need to check both boxes)
+
+# Starting up
+Configure .env
+Configure .env.appStore
+Configure packages/prisma/.env
+`npm run build`
+`npm run -w @calcom/prisma seed-app-store`

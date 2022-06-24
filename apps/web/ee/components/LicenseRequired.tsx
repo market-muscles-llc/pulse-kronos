@@ -1,5 +1,4 @@
 import { ExclamationIcon } from "@heroicons/react/solid";
-import { useSession } from "next-auth/react";
 import React, { AriaRole, ComponentType, FC, Fragment } from "react";
 
 import { CONSOLE_URL } from "@calcom/lib/constants";
@@ -17,11 +16,10 @@ type LicenseRequiredProps = {
  * license.
  */
 const LicenseRequired: FC<LicenseRequiredProps> = ({ children, as = "", ...rest }) => {
-  const session = useSession();
   const Component = as || Fragment;
   return (
     <Component {...rest}>
-      {session.data?.hasValidLicense ? (
+      {true ? (
         children
       ) : (
         <EmptyScreen

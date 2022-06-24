@@ -16,13 +16,17 @@ export const seoConfig: {
   defaultNextSeo: DefaultSeoProps;
 } = {
   headSeo: {
-    siteName: "Cal.com",
+    siteName: "PulseAppt.com",
   },
   defaultNextSeo: {
-    twitter: {
-      handle: "@calcom",
-      site: "@calcom",
-      cardType: "summary_large_image",
+    robotsProps: {
+      nosnippet: true,
+      notranslate: true,
+      noimageindex: true,
+      noarchive: true,
+      maxSnippet: -1,
+      maxImagePreview: "none",
+      maxVideoPreview: -1,
     },
   },
 } as const;

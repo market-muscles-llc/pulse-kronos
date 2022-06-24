@@ -111,8 +111,3 @@
   font-style: italic;
   font-display: swap;
 }
-
-@font-face {
-  font-family: "Cal Sans";
-  src: url("/cal.ttf");
-}

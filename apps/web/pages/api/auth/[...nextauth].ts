@@ -78,8 +78,6 @@ export default NextAuth({
     async signIn(params) {
       const { account, email } = params;
 
-      console.log("SIGNIN", params);
-
       if (account.provider === "email") {
         return true;
       }
@@ -88,8 +86,6 @@ export default NextAuth({
       if (account.type === "credentials") {
         return true;
       }
-
-      console.log("EMAIL", email);
 
       return true;
     },

@@ -12,7 +12,7 @@ import {
   ViewGridIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/solid";
-import { UserPlan } from "@prisma/client";
+import { UserPlan, Prisma } from "@prisma/client";
 import { SessionContextValue, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -129,17 +129,13 @@ const Layout = ({
 
   let pulseLink = process.env.NEXT_PUBLIC_CONTROL_DEFAULT_RETURN_LINK;
 
-  if (user?.metadata?.fqdn) {
-    pulseLink =
-      process.env.NEXT_PUBLIC_CONTROL_PROTOCOL +
-      user.metadata.fqdn +
-      process.env.NEXT_PUBLIC_CONTROL_RETURN_PATH;
+  const fqdn = ((user?.metadata as Prisma.JsonObject)?.fqdn as string) || null;
+
+  if (fqdn) {
+    pulseLink = process.env.NEXT_PUBLIC_CONTROL_PROTOCOL + fqdn + process.env.NEXT_PUBLIC_CONTROL_RETURN_PATH;
 
     if (!localStorage.getItem("control.returnUrl")) {
-      localStorage.setItem(
-        "control.returnUrl",
-        process.env.NEXT_PUBLIC_CONTROL_PROTOCOL + user.metadata.fqdn
-      );
+      localStorage.setItem("control.returnUrl", process.env.NEXT_PUBLIC_CONTROL_PROTOCOL + fqdn);
     }
   }
 
@@ -284,7 +280,7 @@ const Layout = ({
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user.username}`}
+                    href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user?.username}`}
                     className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900">
                     <ExternalLinkIcon className="h-5 w-5 text-gray-500 ltr:mr-3 rtl:ml-3" />{" "}
                     {t("view_public_page")}

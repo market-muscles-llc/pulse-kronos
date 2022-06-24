@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const user = await prisma.user.findUnique({
+    rejectOnNotFound: true,
     where: {
       email: email,
     },
@@ -35,12 +36,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   });
 
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+
   await prisma.user.update({
     where: {
-      id: user.id,
+      id: user?.id,
     },
     data: {
-      away: !user.away,
+      away: !user?.away,
     },
   });
 

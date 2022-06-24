@@ -39,7 +39,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   });
 
-  console.log("USER!", user);
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
 
   const callbackUrl = `${WEBSITE_URL}/event-types`;
   const token = crypto.randomBytes(32).toString("hex");

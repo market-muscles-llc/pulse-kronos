@@ -16,7 +16,7 @@ const getWebhooks = async (options: GetSubscriberOptions) => {
         subscriberUrl: process.env.CONTROL_WEBHOOK_ENDPOINT,
         payloadTemplate: null,
         appId: null,
-        secret: null,
+        secret: process.env.CONTROL_WEBHOOK_SECRET,
         userId: userId,
         eventTypeId: eventTypeId,
         active: true,

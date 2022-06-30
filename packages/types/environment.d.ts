@@ -35,6 +35,7 @@ declare namespace NodeJS {
     readonly CRON_API_KEY: string | undefined;
     readonly CONTROL_API_KEY: string;
     readonly CONTROL_WEBHOOK_ENDPOINT: string;
+    readonly CONTROL_WEBHOOK_SECRET: string;
     readonly NEXT_PUBLIC_CONTROL_DEFAULT_RETURN_LINK: string;
     readonly NEXT_PUBLIC_CONTROL_PROTOCOL: string;
     readonly NEXT_PUBLIC_CONTROL_RETURN_PATH: string;

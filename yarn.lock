@@ -2597,32 +2597,32 @@
     javascript-natural-sort "0.7.1"
     lodash "4.17.21"
 
-"@trpc/client@^9.23.4":
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-9.23.4.tgz#d887d013ca9146299df1a33a1f13d57366a3483f"
-  integrity sha512-usZgbydmqqzUqJQD5yY9f+KftYBKz6ed0J90MYETqRwXl9XtR9kKOwRRMBQwZDdeMhai3Hlk4sDWeC9HR3auRQ==
+"@trpc/client@9.23.*":
+  version "9.23.6"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-9.23.6.tgz#e03f2366eff0cc056ed3aad3994acb553f889e01"
+  integrity sha512-O7PprFqK5aN5ruO3ZYlV+MDnLkmXkk+iSQCAzWBXIRZ3j8l0ZMMlq2C+zwJ9bfkaLMXiczZ6nMkqb8647dnf6g==
   dependencies:
     "@babel/runtime" "^7.9.0"
 
-"@trpc/next@^9.23.4":
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/@trpc/next/-/next-9.23.4.tgz#45c4da34cd99b882aefa0ddc065dd23c5d5467a2"
-  integrity sha512-fPFU/PNkGawiUS56wRx3KsnRh/cvI3RtGYbZKIxLr38oYyHLct/v1uqA+0xJIoyPlcFDLoB6et4MZJuv3/v8Dg==
+"@trpc/next@9.23.*":
+  version "9.23.6"
+  resolved "https://registry.yarnpkg.com/@trpc/next/-/next-9.23.6.tgz#530c792305f6b3d0c80bc48b789d976c0782b08d"
+  integrity sha512-ET4nAt8c+TzOfmMr5VWpa33hW8i9BxENY2Epk3BjmBZOd53aH+2z6pSNxYy9VGadT+r/rSBFcuVuEP2q6SfGDg==
   dependencies:
     "@babel/runtime" "^7.9.0"
     react-ssr-prepass "^1.5.0"
 
-"@trpc/react@^9.23.4":
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/@trpc/react/-/react-9.23.4.tgz#6abb2bbabd76d72cc1a3fb72f6ecc33702cb1c3d"
-  integrity sha512-adori41F2hgjijThOmoeMkIXcaRjScZi6lczRwIIy6UqoUjYb+FfO46Jr7cP/QSX1Ur8VatD6UgLCNViURTfCQ==
+"@trpc/react@9.23.*":
+  version "9.23.6"
+  resolved "https://registry.yarnpkg.com/@trpc/react/-/react-9.23.6.tgz#e207b5920dcae3f1b51d1094cd466b6075ca8987"
+  integrity sha512-pgw/sb5o3Q2vPDohQvIaoSuBPi/0uKXY8lHV6pBwiP45abuXZm4/BjQ9gx5oIPmGgX/KSaY/BN1io/NELtjo+A==
   dependencies:
     "@babel/runtime" "^7.9.0"
 
-"@trpc/server@^9.23.4":
-  version "9.23.4"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-9.23.4.tgz#78ecebbdda79db6252067d66c4a0edef025a501b"
-  integrity sha512-nlOgft5g4BziNplDHhw7f4m9+k8lRPFtVVi8VGxOINt7sQ8pzzEti0WMIl2BX6gugw92t+kae2O5e793AFJs9g==
+"@trpc/server@9.23.*":
+  version "9.23.6"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-9.23.6.tgz#ec12dcf2eadc24f6a2ca4213fc4c17791e3f0828"
+  integrity sha512-xdoHjv0Km6kr7fBpu91rN3wURWGazUA7+dRquWywWLUDH3EiERg6n0Lkz/YgxH7n+liu6UkRs1Npjt6oo01+xA==
 
 "@tryvital/vital-node@^1.3.6":
   version "1.3.6"

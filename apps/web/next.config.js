@@ -1,3 +1,7 @@
+// Sentry Config
+// https://nextjs.org/docs/api-reference/next.config.js/introduction
+// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+
 require("dotenv").config({ path: "../../.env" });
 
 const withTM = require("next-transpile-modules")([
@@ -13,6 +17,8 @@ const withTM = require("next-transpile-modules")([
   "@calcom/embed-snippet",
 ]);
 const { i18n } = require("./next-i18next.config");
+
+const { withSentryConfig } = require("@sentry/nextjs");
 
 if (!process.env.NEXTAUTH_SECRET) throw new Error("Please set NEXTAUTH_SECRET");
 if (!process.env.CALENDSO_ENCRYPTION_KEY) throw new Error("Please set CALENDSO_ENCRYPTION_KEY");
@@ -136,4 +142,21 @@ const nextConfig = {
   },
 };
 
-module.exports = () => plugins.reduce((acc, next) => next(acc), nextConfig);
+const sentryWebpackPluginOptions = {
+  // Additional config options for the Sentry Webpack plugin. Keep in mind that
+  // the following options are set automatically, and overriding them is not
+  // recommended:
+  //   release, url, org, project, authToken, configFile, stripPrefix,
+  //   urlPrefix, include, ignore
+
+  silent: true, // Suppresses all logs
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options.
+};
+
+// Make sure adding Sentry options is the last code to run before exporting, to
+// ensure that your source maps include changes from all other Webpack plugins
+module.exports = withSentryConfig(
+  () => plugins.reduce((acc, next) => next(acc), nextConfig),
+  sentryWebpackPluginOptions
+);

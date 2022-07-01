@@ -1,3 +1,4 @@
+import { withSentry } from "@sentry/nextjs";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getCalendarCredentials, getConnectedCalendars } from "@calcom/core/CalendarManager";
@@ -6,7 +7,7 @@ import notEmpty from "@calcom/lib/notEmpty";
 import { getSession } from "@lib/auth";
 import prisma from "@lib/prisma";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
 
   if (!session?.user?.id) {
@@ -85,4 +86,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     res.status(200).json(selectableCalendars);
   }
-}
+};
+
+export default withSentry(handler);

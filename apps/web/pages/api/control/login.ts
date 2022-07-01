@@ -1,3 +1,4 @@
+import { withSentry } from "@sentry/nextjs";
 import * as crypto from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -18,7 +19,7 @@ function hashToken(token: string) {
 /**
  *
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
     res.status(405).json({ message: "Invalid method" });
     return;
@@ -75,4 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const magicLink = `${WEBSITE_URL}/api/auth/callback/email?${params}`;
 
   res.status(201).json({ link: magicLink });
-}
+};
+
+export default withSentry(handler);

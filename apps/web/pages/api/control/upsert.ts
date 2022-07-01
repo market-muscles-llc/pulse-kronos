@@ -1,4 +1,5 @@
 import { IdentityProvider } from "@prisma/client";
+import { withSentry } from "@sentry/nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { asNumberOrThrow } from "@lib/asStringOrNull";
@@ -8,7 +9,7 @@ import prisma from "@lib/prisma";
 /**
  *
  */
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
     res.status(405).json({ message: "Invalid method" });
     return;
@@ -101,4 +102,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(201).json({ message: "Created user", user: user });
   }
-}
+};
+
+export default withSentry(handler);

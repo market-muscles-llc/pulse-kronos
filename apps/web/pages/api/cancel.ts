@@ -1,4 +1,5 @@
 import { BookingStatus, Credential, WebhookTriggerEvents } from "@prisma/client";
+import { withSentry } from "@sentry/nextjs";
 import async from "async";
 import dayjs from "dayjs";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -19,7 +20,7 @@ import getWebhooks from "@lib/webhooks/subscriptions";
 
 import { getTranslation } from "@server/lib/i18n";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // just bail if it not a DELETE
   if (req.method !== "DELETE" && req.method !== "POST") {
     return res.status(405).end();
@@ -243,4 +244,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await sendCancelledEmails(evt);
 
   res.status(204).end();
-}
+};
+
+export default withSentry(handler);

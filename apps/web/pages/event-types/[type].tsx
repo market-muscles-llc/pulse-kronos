@@ -355,33 +355,11 @@ const EventTypePage = (props: inferSSRProps<typeof getServerSideProps>) => {
     const fetchTokens = async () => {
       // Get a list of most popular ERC20s and ERC777s, combine them into a single list, set as tokensList
       try {
-        const erc20sList: Array<Token> =
-          //   await axios.get(`https://api.bloxy.info/token/list?key=${process.env.BLOXY_API_KEY}`)
-          // ).data
-          bloxyApi.slice(0, 100).map((erc20: Token) => {
-            const { name, address, symbol } = erc20;
-            return { name, address, symbol };
-          });
-
-        const exodiaList = await (await fetch(`https://exodia.io/api/trending?page=1`)).json();
-
-        const nftsList: Array<Token> = exodiaList.map((nft: NFT) => {
-          const { name, contracts } = nft;
-          if (nft.contracts[0]) {
-            const { address, symbol } = contracts[0];
-            return { name, address, symbol };
-          }
-        });
-
-        const unifiedList: Array<Token> = [...erc20sList, ...nftsList];
-
-        setTokensList(unifiedList);
+        setTokensList([]);
       } catch (err) {
         showToast("Failed to load ERC20s & NFTs list. Please enter an address manually.", "error");
       }
     };
-
-    console.log(tokensList); // Just here to make sure it passes the gc hook. Can remove once actual use is made of tokensList.
 
     fetchTokens();
 

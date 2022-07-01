@@ -17,6 +17,11 @@
 - Connected Calendar issues
  - Failed to complete oAuth
  - Insufficient permissions (need to check both boxes)
+- Updated Username
+- Updated Location
+- Reschedule stuff
+
+- Control should let Kronos know when Marketing Email changes
 
 ### App Store:
 Seed app and credentials
@@ -51,4 +56,6 @@ Configure .env
 Configure .env.appStore
 Configure packages/prisma/.env
 `npm run build`
-`npm run -w @calcom/prisma seed-app-store`
+<!-- `npm run -w @calcom/prisma seed-app-store` -->
+
+https://codeburst.io/how-to-deploy-a-nodejs-server-using-laravel-forge-a9a46dbdc761

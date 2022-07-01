@@ -229,7 +229,7 @@ function SettingsView(props: ComponentProps<typeof Settings> & { localeProp: str
                 />
               </div>
             </div>
-            <div className="hidden">
+            <div>
               <div className="mb-6 w-full sm:w-1/2">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   {t("email")}

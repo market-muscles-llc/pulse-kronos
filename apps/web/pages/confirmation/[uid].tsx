@@ -1,6 +1,5 @@
 import { CheckIcon } from "@heroicons/react/outline";
 import { ArrowLeftIcon, ClockIcon, XIcon } from "@heroicons/react/solid";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -14,29 +13,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import RRule from "rrule";
-import { z } from "zod";
 
-import { SpaceBookingSuccessPage } from "@calcom/app-store/spacebooking/components";
 import {
-  sdkActionManager,
   useEmbedNonStylesConfig,
   useIsBackgroundTransparent,
   useIsEmbed,
 } from "@calcom/embed-core/embed-iframe";
-import { parseRecurringEvent } from "@calcom/lib";
-import { getDefaultEvent } from "@calcom/lib/defaultEvents";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { getEveryFreqFor } from "@calcom/lib/recurringStrings";
 import { localStorage } from "@calcom/lib/webstorage";
-import { Prisma } from "@calcom/prisma/client";
-import Button from "@calcom/ui/Button";
-import { EmailInput } from "@calcom/ui/form/fields";
 
 import { asStringOrUndefined } from "@lib/asStringOrNull";
-import { asStringOrThrow } from "@lib/asStringOrNull";
 import { getEventName } from "@lib/event";
 import useTheme from "@lib/hooks/useTheme";
-import { isBrandingHidden } from "@lib/isBrandingHidden";
 import prisma from "@lib/prisma";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@lib/telemetry";
 import { isBrowserLocale24h } from "@lib/timeFormat";
@@ -53,104 +41,12 @@ dayjs.extend(toArray);
 dayjs.extend(timezone);
 dayjs.extend(localizedFormat);
 
-function redirectToExternalUrl(url: string) {
-  window.parent.location.href = url;
-}
-
-/**
- * Redirects to external URL with query params from current URL.
- * Query Params and Hash Fragment if present in external URL are kept intact.
- */
-function RedirectionToast({ url }: { url: string }) {
-  const [timeRemaining, setTimeRemaining] = useState(10);
-  const [isToastVisible, setIsToastVisible] = useState(true);
-  const parsedSuccessUrl = new URL(document.URL);
-  const parsedExternalUrl = new URL(url);
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  /* @ts-ignore */ //https://stackoverflow.com/questions/49218765/typescript-and-iterator-type-iterableiteratort-is-not-an-array-type
-  for (const [name, value] of parsedExternalUrl.searchParams.entries()) {
-    parsedSuccessUrl.searchParams.set(name, value);
-  }
-
-  const urlWithSuccessParams =
-    parsedExternalUrl.origin +
-    parsedExternalUrl.pathname +
-    "?" +
-    parsedSuccessUrl.searchParams.toString() +
-    parsedExternalUrl.hash;
-
-  const { t } = useLocale();
-  const timerRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    timerRef.current = window.setInterval(() => {
-      if (timeRemaining > 0) {
-        setTimeRemaining((timeRemaining) => {
-          return timeRemaining - 1;
-        });
-      } else {
-        redirectToExternalUrl(urlWithSuccessParams);
-        window.clearInterval(timerRef.current as number);
-      }
-    }, 1000);
-    return () => {
-      window.clearInterval(timerRef.current as number);
-    };
-  }, [timeRemaining, urlWithSuccessParams]);
-
-  if (!isToastVisible) {
-    return null;
-  }
-
-  return (
-    <>
-      <div className="relative z-[60] pb-2 sm:pb-5">
-        <div className="mx-auto w-full sm:max-w-7xl sm:px-2 lg:px-8">
-          <div className="border border-green-600 bg-green-500 p-2 sm:p-3">
-            <div className="flex flex-wrap items-center justify-between">
-              <div className="flex w-0 flex-1 items-center">
-                <p className="truncate font-medium text-white sm:mx-3">
-                  <span className="md:hidden">Redirecting to {url} ...</span>
-                  <span className="hidden md:inline">
-                    {t("you_are_being_redirected", { url, seconds: timeRemaining })}
-                  </span>
-                </p>
-              </div>
-              <div className="order-3 mt-2 w-full flex-shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
-                <button
-                  onClick={() => {
-                    redirectToExternalUrl(urlWithSuccessParams);
-                  }}
-                  className="flex w-full items-center justify-center rounded-sm border border-transparent bg-white px-4 py-2 text-sm font-medium text-green-600 shadow-sm hover:bg-green-50">
-                  {t("continue")}
-                </button>
-              </div>
-              <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsToastVisible(false);
-                    window.clearInterval(timerRef.current as number);
-                  }}
-                  className="-mr-1 flex rounded-md p-2 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-white">
-                  <XIcon className="h-6 w-6 text-white" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
 type SuccessProps = inferSSRProps<typeof getServerSideProps>;
 
 export default function Success(props: SuccessProps) {
   const { t } = useLocale();
   const router = useRouter();
-  const { location: _location, name, reschedule, listingStatus, status, isSuccessBookingPage } = router.query;
+  const { location: _location, name, reschedule, status, isSuccessBookingPage } = router.query;
   const location = Array.isArray(_location) ? _location[0] : _location;
   const [is24h, setIs24h] = useState(isBrowserLocale24h());
   const { data: session } = useSession();

@@ -2,7 +2,7 @@ import { BookingStatus, ReminderType } from "@prisma/client";
 import dayjs from "dayjs";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { sendOrganizerRequestReminderEmail } from "@calcom/emails";
+// import { sendOrganizerRequestReminderEmail } from "@calcom/emails";
 import { isPrismaObjOrUndefined, parseRecurringEvent } from "@calcom/lib";
 import prisma, { bookingMinimalSelect } from "@calcom/prisma";
 import type { CalendarEvent } from "@calcom/types/Calendar";
@@ -111,7 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         destinationCalendar: booking.destinationCalendar || user.destinationCalendar,
       };
 
-      await sendOrganizerRequestReminderEmail(evt);
+      // await sendOrganizerRequestReminderEmail(evt);
 
       await prisma.reminderMail.create({
         data: {

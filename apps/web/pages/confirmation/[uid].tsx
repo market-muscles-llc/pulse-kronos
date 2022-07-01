@@ -22,7 +22,7 @@ import {
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { localStorage } from "@calcom/lib/webstorage";
 
-import { asStringOrUndefined } from "@lib/asStringOrNull";
+import { asStringOrUndefined, asNumberOrThrow } from "@lib/asStringOrNull";
 import { getEventName } from "@lib/event";
 import useTheme from "@lib/hooks/useTheme";
 import prisma from "@lib/prisma";
@@ -49,7 +49,6 @@ export default function Success(props: SuccessProps) {
   const { location: _location, name, reschedule, status, isSuccessBookingPage } = router.query;
   const location = Array.isArray(_location) ? _location[0] : _location;
   const [is24h, setIs24h] = useState(isBrowserLocale24h());
-  const { data: session } = useSession();
 
   const [date, setDate] = useState(dayjs.utc(props.date));
   const { eventType, bookingInfo } = props;
@@ -62,14 +61,14 @@ export default function Success(props: SuccessProps) {
 
   const attendeeName = typeof name === "string" ? name : "Nameless";
 
-  const locationFromEventType = !!eventType.locations
+  const locationFromEventType = !!eventType?.locations
     ? (eventType.locations as Array<{ type: string }>)[0]
     : "";
   const locationType = !!locationFromEventType ? locationFromEventType.type : "";
   const eventNameObject = {
     attendeeName,
-    eventType: props.eventType.title,
-    eventName: (props.dynamicEventName as string) || props.eventType.eventName,
+    eventType: props.eventType?.title as string,
+    eventName: (props.dynamicEventName as string) || props.eventType?.eventName,
     host: props.profile.name || "Nameless",
     location: locationType,
     t,
@@ -78,7 +77,7 @@ export default function Success(props: SuccessProps) {
   const giphyImage = metadata?.giphyThankYouPage;
 
   const eventName = getEventName(eventNameObject, true);
-  const needsConfirmation = eventType.requiresConfirmation && reschedule != "true";
+  const needsConfirmation = eventType?.requiresConfirmation && reschedule != "true";
   const isCancelled = status === "CANCELLED" || status === "REJECTED";
   const telemetry = useTelemetry();
   useEffect(() => {
@@ -110,9 +109,9 @@ export default function Success(props: SuccessProps) {
       ],
       startInputType: "utc",
       title: eventName,
-      description: props.eventType.description ? props.eventType.description : undefined,
+      description: props.eventType?.description ?? undefined,
       /** formatted to required type of description ^ */
-      duration: { minutes: props.eventType.length },
+      duration: { minutes: props.eventType?.length },
       ...optional,
     });
 
@@ -138,7 +137,6 @@ export default function Success(props: SuccessProps) {
     }
     return t("emailed_you_and_attendees" + titleSuffix);
   }
-  const userIsOwner = !!(session?.user?.id && eventType?.users?.find((user) => (user.id = session.user.id)));
   const { isReady, Theme } = useTheme(isSuccessBookingPage ? props.profile.theme : "light");
   const title = t(
     `booking_${needsConfirmation ? "submitted" : "confirmed"}${props.recurringBookings ? "_recurring" : ""}`
@@ -150,15 +148,6 @@ export default function Success(props: SuccessProps) {
         <div
           className={isEmbed ? "" : "h-screen bg-neutral-100 dark:bg-neutral-900"}
           data-testid="success-page">
-          {userIsOwner && !isEmbed && (
-            <div className="-mb-7 ml-9 mt-7">
-              <Link href={eventType.recurringEvent?.count ? "/bookings/recurring" : "/bookings"}>
-                <a className="flex items-center text-black dark:text-white">
-                  <ArrowLeftIcon className="mr-1 h-4 w-4" /> {t("back_to_bookings")}
-                </a>
-              </Link>
-            </div>
-          )}
           <Theme />
           <HeadSeo title={title} description={title} />
           <CustomBranding lightVal={props.profile.brandColor} darkVal={props.profile.darkBrandColor} />
@@ -224,7 +213,8 @@ export default function Success(props: SuccessProps) {
                           <div className="col-span-2 mb-6">
                             {date.format("MMMM DD, YYYY")}
                             <br />
-                            {date.format("LT")} - {date.add(eventType?.length, "m").format("LT")}{" "}
+                            {date.format("LT")} -{" "}
+                            {date.add(asNumberOrThrow(eventType?.length), "m").format("LT")}{" "}
                             <span className="text-bookinglight">
                               ({localStorage.getItem("timeOption.preferredTimeZone") || dayjs.tz.guess()})
                             </span>
@@ -239,7 +229,7 @@ export default function Success(props: SuccessProps) {
                                     <p className="text-bookinglight">{bookingInfo.user.email}</p>
                                   </div>
                                 )}
-                                {bookingInfo?.attendees.map((attendee, index) => (
+                                {bookingInfo?.attendees.map((attendee, index: number) => (
                                   <div
                                     key={attendee.name}
                                     className={index === bookingInfo.attendees.length - 1 ? "" : "mb-3"}>
@@ -320,7 +310,7 @@ export default function Success(props: SuccessProps) {
                         <CancelBooking
                           booking={{ uid: bookingInfo?.uid, title: bookingInfo?.title }}
                           profile={{ name: props.profile.name, slug: props.profile.slug }}
-                          recurringEvent={eventType?.recurringEvent}
+                          recurringEvent={null}
                           team={eventType?.team?.name}
                           setIsCancellationMode={setIsCancellationMode}
                           theme={isSuccessBookingPage ? props.profile.theme : "light"}
@@ -337,17 +327,13 @@ export default function Success(props: SuccessProps) {
                               `https://calendar.google.com/calendar/r/eventedit?dates=${date
                                 .utc()
                                 .format("YYYYMMDDTHHmmss[Z]")}/${date
-                                .add(props?.eventType?.length, "minute")
+                                .add(asNumberOrThrow(props?.eventType?.length), "minute")
                                 .utc()
                                 .format("YYYYMMDDTHHmmss[Z]")}&text=${eventName}&details=${
                                 props?.eventType?.description
                               }` +
                               (typeof location === "string"
                                 ? "&location=" + encodeURIComponent(location)
-                                : "") +
-                              (props?.eventType?.recurringEvent
-                                ? "&recur=" +
-                                  encodeURIComponent(new RRule(props?.eventType?.recurringEvent).toString())
                                 : "")
                             }>
                             <a className="mx-2 h-10 w-10 rounded-sm border border-neutral-200 px-3 py-2 dark:border-neutral-700 dark:text-white">
@@ -365,9 +351,12 @@ export default function Success(props: SuccessProps) {
                             href={
                               encodeURI(
                                 "https://outlook.live.com/calendar/0/deeplink/compose?body=" +
-                                  props.eventType.description +
+                                  props.eventType?.description +
                                   "&enddt=" +
-                                  date.add(props.eventType.length, "minute").utc().format() +
+                                  date
+                                    .add(asNumberOrThrow(props.eventType?.length), "minute")
+                                    .utc()
+                                    .format() +
                                   "&path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&startdt=" +
                                   date.utc().format() +
                                   "&subject=" +
@@ -393,7 +382,10 @@ export default function Success(props: SuccessProps) {
                                 "https://outlook.office.com/calendar/0/deeplink/compose?body=" +
                                   props?.eventType?.description +
                                   "&enddt=" +
-                                  date.add(props?.eventType?.length, "minute").utc().format() +
+                                  date
+                                    .add(asNumberOrThrow(props?.eventType?.length), "minute")
+                                    .utc()
+                                    .format() +
                                   "&path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&startdt=" +
                                   date.utc().format() +
                                   "&subject=" +
@@ -416,7 +408,7 @@ export default function Success(props: SuccessProps) {
                           <Link href={"data:text/calendar," + eventLink()}>
                             <a
                               className="mx-2 h-10 w-10 rounded-sm border border-neutral-200 px-3 py-2 dark:border-neutral-700 dark:text-white"
-                              download={props.eventType.title + ".ics"}>
+                              download={props.eventType?.title + ".ics"}>
                               <svg
                                 version="1.1"
                                 fill="currentColor"
@@ -484,6 +476,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           description: true,
           length: true,
           recurringEvent: true,
+          locations: true,
+          eventName: true,
+          metadata: true,
+          requiresConfirmation: true,
           team: {
             select: {
               id: true,
@@ -518,7 +514,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       trpcState: ssr.dehydrate(),
       dynamicEventName: bookingInfo?.eventType?.title,
       userHasSpaceBooking: false,
-      bookingInfo: (({ startTime, endTime, ...o }) => o)(bookingInfo),
+      bookingInfo: bookingInfo, // (({ startTime, endTime, ...o }) => o)(bookingInfo),
       date: bookingInfo?.startTime.toString(),
     },
   };

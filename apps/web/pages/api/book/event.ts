@@ -13,8 +13,7 @@ import { v5 as uuidv5 } from "uuid";
 import EventManager from "@calcom/core/EventManager";
 import { getUserAvailability } from "@calcom/core/getUserAvailability";
 import {
-  sendAttendeeRequestEmail,
-  sendOrganizerRequestEmail,
+  sendAttendeeRequestEmail, // sendOrganizerRequestEmail,
   sendRescheduledEmails,
   sendScheduledEmails,
 } from "@calcom/emails";
@@ -758,7 +757,7 @@ async function handler(req: NextApiRequest) {
   }
 
   if (eventType.requiresConfirmation && !rescheduleUid && noEmail !== true) {
-    await sendOrganizerRequestEmail({ ...evt, additionalNotes });
+    // await sendOrganizerRequestEmail({ ...evt, additionalNotes });
     await sendAttendeeRequestEmail({ ...evt, additionalNotes }, attendeesList[0]);
   }
 

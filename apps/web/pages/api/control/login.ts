@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { WEBSITE_URL } from "@calcom/lib/constants";
 
+import { asNumberOrThrow } from "@lib/asStringOrNull";
 import prisma from "@lib/prisma";
 
 /**
@@ -30,12 +31,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const data = req.body;
-  const { email } = data;
+  const { id } = data;
 
-  const user = await prisma.user.findFirst({
-    rejectOnNotFound: true,
+  if (!id) {
+    res.status(400).json({ message: "Invalid input" });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
     where: {
-      email: email,
+      id: asNumberOrThrow(id),
     },
   });
 

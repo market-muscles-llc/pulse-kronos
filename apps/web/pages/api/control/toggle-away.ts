@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { asNumberOrThrow } from "@lib/asStringOrNull";
 import prisma from "@lib/prisma";
 
 /**
@@ -18,17 +19,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const data = req.body;
-  const { email } = data;
+  const { id } = data;
 
-  if (!email || email.trim().length < 3) {
-    res.status(422).json({ message: "Invalid email" });
+  if (!id) {
+    res.status(400).json({ message: "Invalid input" });
     return;
   }
 
   const user = await prisma.user.findUnique({
     rejectOnNotFound: true,
     where: {
-      email: email,
+      id: asNumberOrThrow(id),
     },
     select: {
       id: true,

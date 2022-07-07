@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 
 import { useEmbedTheme } from "@calcom/embed-core/embed-iframe";
@@ -34,7 +35,7 @@ export default function useTheme(theme?: Maybe<string>) {
   const embedTheme = useEmbedTheme();
   // Embed UI configuration takes more precedence over App Configuration
   theme = embedTheme || theme;
-  const [_theme, setTheme] = useState<Maybe<string>>(null);
+  const [_theme, setTheme] = useState<Maybe<string>>(theme);
   useEffect(() => {
     // TODO: isReady doesn't seem required now. This is also impacting PSI Score for pages which are using isReady.
     setIsReady(true);
@@ -45,9 +46,9 @@ export default function useTheme(theme?: Maybe<string>) {
     const code = applyThemeAndAddListener.toString();
     const themeStr = _theme ? `"${_theme}"` : null;
     return (
-      <Head>
-        <script dangerouslySetInnerHTML={{ __html: `(${code})(${themeStr})` }}></script>
-      </Head>
+      <>
+        <Script id="" dangerouslySetInnerHTML={{ __html: `(${code})(${themeStr})` }}></Script>
+      </>
     );
   }
 

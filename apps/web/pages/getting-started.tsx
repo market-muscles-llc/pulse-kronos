@@ -2,10 +2,6 @@ import { ArrowRightIcon } from "@heroicons/react/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Prisma } from "@prisma/client";
 import classnames from "classnames";
-import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import debounce from "lodash/debounce";
 import omit from "lodash/omit";
 import { NextPageContext } from "next";
@@ -18,7 +14,9 @@ import * as z from "zod";
 
 import getApps from "@calcom/app-store/utils";
 import { getCalendarCredentials, getConnectedCalendars } from "@calcom/core/CalendarManager";
-import { ResponseUsernameApi } from "@calcom/ee/lib/core/checkPremiumUsername";
+import dayjs from "@calcom/dayjs";
+import { DOCS_URL } from "@calcom/lib/constants";
+import { fetchUsername } from "@calcom/lib/fetchUsername";
 import { Alert } from "@calcom/ui/Alert";
 import Button from "@calcom/ui/Button";
 import { Form } from "@calcom/ui/form/fields";
@@ -39,10 +37,6 @@ import { CalendarListContainer } from "@components/integrations/CalendarListCont
 import TimezoneSelect from "@components/ui/form/TimezoneSelect";
 
 import getEventTypes from "../lib/queries/event-types/get-event-types";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localizedFormat);
 
 type ScheduleFormValues = {
   schedule: ScheduleType;
@@ -236,20 +230,6 @@ export default function Onboarding(props: inferSSRProps<typeof getServerSideProp
     token: string;
   }>({ resolver: zodResolver(schema), mode: "onSubmit" });
 
-  const fetchUsername = async (username: string) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_WEBSITE_URL}/api/username`, {
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: username.trim() }),
-      method: "POST",
-      mode: "cors",
-    });
-    const data = (await response.json()) as ResponseUsernameApi;
-    return { response, data };
-  };
-
   // Should update username on user when being redirected from sign up and doing google/saml
   useEffect(() => {
     async function validateAndSave(username: string) {
@@ -282,6 +262,80 @@ export default function Onboarding(props: inferSSRProps<typeof getServerSideProp
       description: t("welcome_instructions"),
       Component: (
         <>
+          <div hidden>
+            {selectedImport == "" && (
+              <div className="mb-4 grid grid-cols-2 gap-x-4">
+                <Button color="secondary" onClick={() => setSelectedImport("calendly")}>
+                  {t("import_from")} Calendly
+                </Button>
+                <Button color="secondary" onClick={() => setSelectedImport("savvycal")}>
+                  {t("import_from")} SavvyCal
+                </Button>
+              </div>
+            )}
+            {selectedImport && (
+              <div>
+                <h2 className="font-cal text-2xl text-gray-900">
+                  {t("import_from")} {selectedImport === "calendly" ? "Calendly" : "SavvyCal"}
+                </h2>
+                <p className="mb-2 text-sm text-gray-500">
+                  {t("you_will_need_to_generate")}. Find out how to do this{" "}
+                  <a href={`${DOCS_URL}/import`}>here</a>.
+                </p>
+                <form
+                  className="flex"
+                  onSubmit={formMethods.handleSubmit(async (values) => {
+                    // track the number of imports. Without personal data/payload
+                    telemetry.event(telemetryEventTypes.importSubmitted, {
+                      ...collectPageParameters(),
+                      selectedImport,
+                    });
+                    setSubmitting(true);
+                    const response = await fetch(`/api/import/${selectedImport}`, {
+                      method: "POST",
+                      body: JSON.stringify({
+                        token: values.token,
+                      }),
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    });
+                    if (response.status === 201) {
+                      setSubmitting(false);
+                      handleSkipStep();
+                    } else {
+                      await response.json().catch((e) => {
+                        console.log("Error: response.json invalid: " + e);
+                        setSubmitting(false);
+                      });
+                    }
+                  })}>
+                  <input
+                    onChange={async (e) => {
+                      formMethods.setValue("token", e.target.value);
+                    }}
+                    type="text"
+                    name="token"
+                    id="token"
+                    placeholder={t("access_token")}
+                    required
+                    className="mt-1 block w-full rounded-sm border border-gray-300 px-3 py-2 shadow-sm focus:border-neutral-500 focus:outline-none focus:ring-neutral-500 sm:text-sm"
+                  />
+                  <Button type="submit" className="mt-1 ml-4 h-10">
+                    {t("import")}
+                  </Button>
+                </form>
+              </div>
+            )}
+          </div>
+          <div hidden className="relative my-4">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-2 text-sm text-gray-500">or</span>
+            </div>
+          </div>
           <form className="sm:mx-auto sm:w-full">
             <section className="space-y-8">
               <fieldset>
@@ -477,7 +531,7 @@ export default function Onboarding(props: inferSSRProps<typeof getServerSideProp
   return (
     <div className="bg-brand min-h-screen" data-testid="onboarding">
       <Head>
-        <title>PulseAppt.com - {t("getting_started")}</title>
+        <title>Cal.com - {t("getting_started")}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

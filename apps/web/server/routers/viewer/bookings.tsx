@@ -1,8 +1,8 @@
 import { SchedulingType } from "@prisma/client";
-import dayjs from "dayjs";
 import { z } from "zod";
 
 import EventManager from "@calcom/core/EventManager";
+import dayjs from "@calcom/dayjs";
 import { sendLocationChangeEmails } from "@calcom/emails";
 import { parseRecurringEvent } from "@calcom/lib";
 import logger from "@calcom/lib/logger";
@@ -125,6 +125,7 @@ export const bookingsRouter = createProtectedRouter()
         };
 
         const eventManager = new EventManager(ctx.user);
+        // TODO: This is causing duplicate calendar events when updating location
         const scheduleResult = await eventManager.create(evt);
 
         const results = scheduleResult.results;

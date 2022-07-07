@@ -11,7 +11,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EventTypeCustomInputType } from "@prisma/client";
 import { useContracts } from "contexts/contractsContext";
-import dayjs from "dayjs";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -24,6 +24,7 @@ import { useMutation } from "react-query";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
+import dayjs from "@calcom/dayjs";
 import {
   useEmbedNonStylesConfig,
   useIsBackgroundTransparent,
@@ -278,6 +279,10 @@ const BookingPage = ({
     .object({
       name: z.string().min(1),
       email: z.string().email(),
+      phone: z
+        .string()
+        .refine((val) => isValidPhoneNumber(val))
+        .optional(),
     })
     .passthrough();
 
@@ -476,7 +481,7 @@ const BookingPage = ({
                 <h1 className="text-bookingdark mb-4 text-xl font-semibold dark:text-white">
                   {eventType.title}
                 </h1>
-                {eventType.seatsPerTimeSlot && (
+                {!!eventType.seatsPerTimeSlot && (
                   <p
                     className={`${
                       booking && booking.attendees.length / eventType.seatsPerTimeSlot >= 0.5
@@ -570,7 +575,7 @@ const BookingPage = ({
                   </div>
                 )}
               </div>
-              <div className="mt-8 sm:w-1/2 sm:pl-8 sm:pr-4">
+              <div className="sm:w-1/2 sm:pl-8 sm:pr-4">
                 <Form form={bookingForm} handleSubmit={bookEvent}>
                   <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-white">
@@ -655,6 +660,12 @@ const BookingPage = ({
                           disabled={disableInput}
                         />
                       </div>
+                      {bookingForm.formState.errors.phone && (
+                        <div className="mt-2 flex items-center text-sm text-red-700 ">
+                          <ExclamationCircleIcon className="mr-2 h-3 w-3" />
+                          <p>{t("invalid_number")}</p>
+                        </div>
+                      )}
                     </div>
                   )}
                   {eventType.customInputs

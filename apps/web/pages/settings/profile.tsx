@@ -258,7 +258,7 @@ function SettingsView(props: ComponentProps<typeof Settings> & { localeProp: str
                     className="mt-1 block w-full rounded-sm border-gray-300 shadow-sm focus:border-neutral-800 focus:ring-neutral-800 sm:text-sm"
                     defaultValue={user.email}
                   />
-                  <p className="mt-2 text-sm text-gray-500" id="email-description">
+                  <p hidden className="mt-2 text-sm text-gray-500" id="email-description">
                     {t("change_email_tip")}
                   </p>
                 </div>
@@ -448,7 +448,7 @@ function SettingsView(props: ComponentProps<typeof Settings> & { localeProp: str
                   <ColorPicker defaultValue={user.darkBrandColor} onChange={setDarkBrandColor} />
                 </div>
               </div>
-              <div>
+              <div hidden>
                 <div className="relative flex items-start">
                   <div className="flex h-5 items-center">
                     <HideBrandingInput user={user} hideBrandingRef={hideBrandingRef} />
@@ -462,8 +462,10 @@ function SettingsView(props: ComponentProps<typeof Settings> & { localeProp: str
                   </div>
                 </div>
               </div>
-              <h3 className="text-md mt-7 hidden font-bold leading-6 text-red-700">{t("danger_zone")}</h3>
-              <div className="hiden">
+              <h3 hidden className="text-md mt-7 font-bold leading-6 text-red-700">
+                {t("danger_zone")}
+              </h3>
+              <div hidden>
                 <div className="relative flex items-start">
                   <Dialog>
                     <DialogTrigger asChild>

@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 
 import { useEmbedTheme } from "@calcom/embed-core/embed-iframe";
@@ -45,9 +46,9 @@ export default function useTheme(theme?: Maybe<string>) {
     const code = applyThemeAndAddListener.toString();
     const themeStr = _theme ? `"${_theme}"` : null;
     return (
-      <Head>
-        <script dangerouslySetInnerHTML={{ __html: `(${code})(${themeStr})` }}></script>
-      </Head>
+      <>
+        <Script id="" dangerouslySetInnerHTML={{ __html: `(${code})(${themeStr})` }}></Script>
+      </>
     );
   }
 

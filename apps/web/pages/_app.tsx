@@ -1,6 +1,7 @@
 import { EventCollectionProvider } from "next-collect/client";
 import { DefaultSeo } from "next-seo";
 import Head from "next/head";
+import Script from "next/script";
 import superjson from "superjson";
 
 import "@calcom/embed-core/src/embed-iframe";
@@ -39,10 +40,11 @@ function MyApp(props: AppProps) {
           <DefaultSeo {...seoConfig.defaultNextSeo} />
           <I18nLanguageHandler />
           <Head>
-            <script
-              dangerouslySetInnerHTML={{ __html: `window.CalComPageStatus = '${pageStatus}'` }}></script>
             <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
           </Head>
+          <Script
+            id="CalComPageStatus"
+            dangerouslySetInnerHTML={{ __html: `window.CalComPageStatus = '${pageStatus}'` }}></Script>
           {Component.requiresLicense ? (
             <LicenseRequired>
               <Component {...pageProps} err={err} />

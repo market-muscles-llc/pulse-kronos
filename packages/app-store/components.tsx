@@ -9,6 +9,20 @@ import Button from "@calcom/ui/Button";
 import { InstallAppButtonMap } from "./apps.browser.generated";
 import { InstallAppButtonProps } from "./types";
 
+function GoogleConnectButton(props: InstallAppButtonProps) {
+  return (
+    <Button className="p-0" color="secondary" {...props}>
+      <img
+        className="w-auto"
+        height="38px"
+        alt="Sign in with Google"
+        title="Sign in with Google"
+        src="/btn_google_signin_light_normal_web.png"
+      />
+    </Button>
+  );
+}
+
 export const InstallAppButton = (
   props: {
     type: App["type"];
@@ -19,6 +33,27 @@ export const InstallAppButton = (
   const key = deriveAppDictKeyFromType(props.type, InstallAppButtonMap);
   const InstallAppButtonComponent = InstallAppButtonMap[key as keyof typeof InstallAppButtonMap];
   if (!InstallAppButtonComponent) return null;
+
+  if (props.type === "google_calendar") {
+    return (
+      <InstallAppButtonComponent
+        render={(buttonProps) => (
+          <Button color="secondary" {...buttonProps} style={{ padding: "0" }}>
+            <img
+              style={{ maxWidth: "none" }}
+              width="176px"
+              height="38px"
+              alt="Sign in with Google"
+              title="Sign in with Google"
+              src="/btn_google_signin_light_normal_web.png"
+            />
+          </Button>
+        )}
+        onChanged={props.onChanged}
+      />
+    );
+  }
+
   if (status === "unauthenticated")
     return (
       <InstallAppButtonComponent
@@ -33,6 +68,7 @@ export const InstallAppButton = (
         onChanged={props.onChanged}
       />
     );
+
   return <InstallAppButtonComponent render={props.render} onChanged={props.onChanged} />;
 };
 

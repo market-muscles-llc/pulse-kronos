@@ -514,7 +514,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       trpcState: ssr.dehydrate(),
       dynamicEventName: bookingInfo?.eventType?.title,
       userHasSpaceBooking: false,
-      bookingInfo: bookingInfo, // (({ startTime, endTime, ...o }) => o)(bookingInfo),
+      bookingInfo: (({ startTime, endTime, ...o }) => o)(bookingInfo),
       date: bookingInfo?.startTime.toString(),
     },
   };

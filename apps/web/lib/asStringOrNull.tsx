@@ -11,7 +11,7 @@ export function asNumberOrUndefined(str: unknown) {
 }
 
 export function asNumberOrThrow(str: unknown) {
-  return parseInt(asStringOrThrow(str));
+  return parseInt(asStringOrThrow(String(str)));
 }
 
 export function asStringOrThrow(str: unknown): string {

@@ -2,6 +2,7 @@
  * Typescript class based component for custom-error
  * @link https://nextjs.org/docs/advanced-features/custom-error-page
  */
+import * as Sentry from "@sentry/nextjs";
 import { NextPage, NextPageContext } from "next";
 import NextError, { ErrorProps } from "next/error";
 import React from "react";
@@ -38,6 +39,7 @@ const CustomError: NextPage<CustomErrorProps> = (props) => {
     const e = getErrorFromUnknown(err);
     // can be captured here
     // e.g. Sentry.captureException(e);
+    Sentry.captureException(e);
   }
   return <ErrorPage statusCode={statusCode} error={err} message={message} />;
 };
@@ -64,6 +66,11 @@ CustomError.getInitialProps = async ({ res, err, asPath }: AugmentedNextPageCont
     errorInitialProps.err = err;
   }
 
+  // Returning early because we don't want to log 404 errors to Sentry.
+  if (res?.statusCode === 404) {
+    return errorInitialProps;
+  }
+
   if (res) {
     // Running on the server, the response object is available.
     //
@@ -75,6 +82,12 @@ CustomError.getInitialProps = async ({ res, err, asPath }: AugmentedNextPageCont
 
     log.debug(`server side logged this: ${err?.toString() ?? JSON.stringify(err)}`);
     log.info("return props, ", errorInitialProps);
+
+    Sentry.captureException(err);
+
+    // Flushing before returning is necessary if deploying to Vercel, see
+    // https://vercel.com/docs/platform/limits#streaming-responses
+    await Sentry.flush(2000);
 
     return errorInitialProps;
   } else {
@@ -96,7 +109,8 @@ CustomError.getInitialProps = async ({ res, err, asPath }: AugmentedNextPageCont
   // If this point is reached, getInitialProps was called without any
   // information about what the error might be. This is unexpected and may
   // indicate a bug introduced in Next.js
-  new Error(`_error.tsx getInitialProps missing data at path: ${asPath}`);
+  Sentry.captureException(new Error(`_error.tsx getInitialProps missing data at path: ${asPath}`));
+  await Sentry.flush(2000);
 
   return errorInitialProps;
 };

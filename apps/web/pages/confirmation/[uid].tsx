@@ -7,6 +7,7 @@ import timezone from "dayjs/plugin/timezone";
 import toArray from "dayjs/plugin/toArray";
 import utc from "dayjs/plugin/utc";
 import { createEvent } from "ics";
+import { omit } from "lodash";
 import { GetServerSidePropsContext } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -505,6 +506,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   console.log("BOOKINGINFO", bookingInfo);
 
+  const dateString = bookingInfo?.startTime.toString();
+
   return {
     props: {
       hideBranding: false,
@@ -514,8 +517,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       trpcState: ssr.dehydrate(),
       dynamicEventName: bookingInfo?.eventType?.title,
       userHasSpaceBooking: false,
-      bookingInfo: (({ startTime, endTime, ...o }) => o)(bookingInfo),
-      date: bookingInfo?.startTime.toString(),
+      bookingInfo: omit(bookingInfo, ["startTime", "endTime"]),
+      date: dateString,
     },
   };
 }

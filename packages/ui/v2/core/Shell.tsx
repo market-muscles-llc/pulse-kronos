@@ -377,6 +377,52 @@ function UserDropdown({ small }: { small?: boolean }) {
   );
 }
 
+function UserPresenceSwitch({ small }: { small?: boolean }) {
+  const { t } = useLocale();
+  const query = useMeQuery();
+  const user = query.data;
+  const mutation = trpc.useMutation("viewer.away", {
+    onSettled() {
+      utils.invalidateQueries("viewer.me");
+    },
+  });
+  const utils = trpc.useContext();
+
+  // Prevent rendering dropdown if user isn't available.
+  // We don't want to show nameless user.
+  if (!user) {
+    return null;
+  }
+  return (
+    <div>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user.username}`}
+        className="mb-8 flex px-2 py-2 text-sm text-gray-700">
+        <Icon.FiExternalLink className="h-4 w-4 text-gray-500 ltr:mr-2 rtl:ml-3" /> {t("view_public_page")}
+      </a>
+      <button
+        onClick={() => {
+          mutation.mutate({ away: !user?.away });
+          utils.invalidateQueries("viewer.me");
+        }}
+        className="flex w-full cursor-pointer items-center p-2 text-sm hover:bg-gray-100 hover:text-gray-900">
+        <Icon.FiMoon
+          className={classNames(
+            user.away
+              ? "text-purple-500 group-hover:text-purple-700"
+              : "text-gray-500 group-hover:text-gray-700",
+            "h-4 w-4 flex-shrink-0 ltr:mr-2 rtl:ml-3"
+          )}
+          aria-hidden="true"
+        />
+        {user.away ? t("set_as_free") : t("set_as_away")}
+      </button>
+    </div>
+  );
+}
+
 export type NavigationItemType = {
   name: string;
   href: string;
@@ -726,14 +772,21 @@ function SideBar() {
         <UserV2OptInBanner />
       </div> */}
 
-      <div data-testid="user-dropdown-trigger">
+      {/* <div data-testid="user-dropdown-trigger">
         <span className="hidden lg:inline">
           <UserDropdown />
         </span>
         <span className="hidden md:inline lg:hidden">
           <UserDropdown small />
         </span>
+      </div> */}
+
+      <div>
+        <span className="hidden md:inline">
+          <UserPresenceSwitch />
+        </span>
       </div>
+
       <DeploymentInfo />
     </aside>
   );

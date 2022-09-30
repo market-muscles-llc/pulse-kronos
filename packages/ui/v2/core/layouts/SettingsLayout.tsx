@@ -33,53 +33,53 @@ const tabs: VerticalTabItemProps[] = [
       // { name: "referrals", href: "/settings/my-account/referrals" },
     ],
   },
-  {
-    name: "security",
-    href: "/settings/security",
-    icon: Icon.FiKey,
-    children: [
-      //
-      { name: "password", href: "/settings/security/password" },
-      { name: "2fa_auth", href: "/settings/security/two-factor-auth" },
-    ],
-  },
-  {
-    name: "billing",
-    href: "/settings/billing",
-    icon: Icon.FiCreditCard,
-    children: [
-      { name: "Manage Billing", href: "/api/integrations/stripepayment/portal", isExternalLink: true },
-    ],
-  },
-  {
-    name: "developer",
-    href: "/settings/developer",
-    icon: Icon.FiTerminal,
-    children: [
-      //
-      { name: "webhooks", href: "/settings/developer/webhooks" },
-      { name: "api_keys", href: "/settings/developer/api-keys" },
-      // TODO: Add profile level for embeds
-      // { name: "embeds", href: "/v2/settings/developer/embeds" },
-    ],
-  },
-  {
-    name: "teams",
-    href: "/settings/teams",
-    icon: Icon.FiUsers,
-    children: [],
-  },
-  {
-    name: "admin",
-    href: "/settings/admin",
-    icon: Icon.FiLock,
-    children: [
-      //
-      { name: "impersonation", href: "/settings/admin/impersonation" },
-      { name: "apps", href: "/settings/admin/apps" },
-      { name: "users", href: "/settings/admin/users" },
-    ],
-  },
+  // {
+  //   name: "security",
+  //   href: "/settings/security",
+  //   icon: Icon.FiKey,
+  //   children: [
+  //     //
+  //     { name: "password", href: "/settings/security/password" },
+  //     { name: "2fa_auth", href: "/settings/security/two-factor-auth" },
+  //   ],
+  // },
+  // {
+  //   name: "billing",
+  //   href: "/settings/billing",
+  //   icon: Icon.FiCreditCard,
+  //   children: [
+  //     { name: "Manage Billing", href: "/api/integrations/stripepayment/portal", isExternalLink: true },
+  //   ],
+  // },
+  // {
+  //   name: "developer",
+  //   href: "/settings/developer",
+  //   icon: Icon.FiTerminal,
+  //   children: [
+  //     //
+  //     { name: "webhooks", href: "/settings/developer/webhooks" },
+  //     { name: "api_keys", href: "/settings/developer/api-keys" },
+  //     // TODO: Add profile level for embeds
+  //     // { name: "embeds", href: "/v2/settings/developer/embeds" },
+  //   ],
+  // },
+  // {
+  //   name: "teams",
+  //   href: "/settings/teams",
+  //   icon: Icon.FiUsers,
+  //   children: [],
+  // },
+  // {
+  //   name: "admin",
+  //   href: "/settings/admin",
+  //   icon: Icon.FiLock,
+  //   children: [
+  //     //
+  //     { name: "impersonation", href: "/settings/admin/impersonation" },
+  //     { name: "apps", href: "/settings/admin/apps" },
+  //     { name: "users", href: "/settings/admin/users" },
+  //   ],
+  // },
 ];
 
 // The following keys are assigned to admin only

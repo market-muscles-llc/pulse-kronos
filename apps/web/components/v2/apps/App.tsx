@@ -92,7 +92,7 @@ const Component = ({
               <img className="min-h-16 min-w-16 h-16 w-16" src={logo} alt={name} />
               <h1 className="font-cal ml-4 text-3xl text-gray-900">{name}</h1>
             </div>
-            <h2 className="text-sm font-medium text-gray-600">
+            <h2 hidden className="text-sm font-medium text-gray-600">
               <Link href={`categories/${categories[0]}`}>
                 <a className="rounded-md bg-gray-100 p-1 text-xs capitalize text-gray-800">{categories[0]}</a>
               </Link>{" "}
@@ -184,8 +184,10 @@ const Component = ({
         )}
 
         <div className="prose prose-sm mt-8">{body}</div>
-        <h4 className="mt-8 font-semibold text-gray-900 ">{t("pricing")}</h4>
-        <span>
+        <h4 hidden className="mt-8 font-semibold text-gray-900 ">
+          {t("pricing")}
+        </h4>
+        <span hidden>
           {price === 0 ? (
             "Free"
           ) : (
@@ -200,8 +202,10 @@ const Component = ({
           )}
         </span>
 
-        <h4 className="mt-8 mb-2 font-semibold text-gray-900 ">{t("learn_more")}</h4>
-        <ul className="prose-sm -ml-1 -mr-1 leading-5">
+        <h4 hidden className="mt-8 mb-2 font-semibold text-gray-900 ">
+          {t("learn_more")}
+        </h4>
+        <ul hidden className="prose-sm -ml-1 -mr-1 leading-5">
           {docs && (
             <li>
               <a
@@ -264,11 +268,6 @@ const Component = ({
             </li>
           )}
         </ul>
-        <hr className="my-8" />
-        <span className="leading-1 block text-xs text-gray-500">{t("every_app_published")}</span>
-        <a className="mt-2 block text-xs text-red-500" href="mailto:help@cal.com">
-          <Icon.FiFlag className="inline h-3 w-3" /> {t("report_app")}
-        </a>
       </div>
     </div>
   );

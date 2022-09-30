@@ -510,12 +510,10 @@ const Navigation = () => {
   );
 };
 
+const hiddenNavigationItems = ["workflows", "teams", "Routing Forms"];
+
 function useShouldDisplayNavigationItem(item: NavigationItemType) {
-  const { status } = useSession();
-  const { data: routingForms } = trpc.useQuery(["viewer.appById", { appId: "routing-forms" }], {
-    enabled: status === "authenticated" && requiredCredentialNavigationItems.includes(item.name),
-  });
-  return !requiredCredentialNavigationItems.includes(item.name) || !!routingForms;
+  return !hiddenNavigationItems.includes(item.name);
 }
 
 const defaultIsCurrent: NavigationItemType["isCurrent"] = ({ isChild, item, router }) => {

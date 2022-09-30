@@ -60,5 +60,15 @@ declare namespace NodeJS {
      * Set it to "1" if you need to run E2E tests locally
      **/
     readonly NEXT_PUBLIC_IS_E2E: "1" | undefined;
+
+    /**
+     * Kronos Items
+     **/
+    readonly CONTROL_API_KEY: string;
+    readonly CONTROL_WEBHOOK_ENDPOINT: string;
+    readonly CONTROL_WEBHOOK_SECRET: string;
+    readonly NEXT_PUBLIC_CONTROL_DEFAULT_RETURN_LINK: string;
+    readonly NEXT_PUBLIC_CONTROL_PROTOCOL: string;
+    readonly NEXT_PUBLIC_CONTROL_RETURN_PATH: string;
   }
 }

@@ -554,35 +554,6 @@ export default function Success(props: SuccessProps) {
                     </div>
                   </>
                 )}
-                {session === null && !(userIsOwner || props.hideBranding) && (
-                  <>
-                    <hr className="border-bookinglightest" />
-                    <div className="border-bookinglightest text-booking-lighter dark:border-darkgray-300 pt-8 text-center text-xs dark:text-white">
-                      <a href="https://cal.com/signup">{t("create_booking_link_with_calcom")}</a>
-
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const target = e.target as typeof e.target & {
-                            email: { value: string };
-                          };
-                          router.push(`https://cal.com/signup?email=${target.email.value}`);
-                        }}
-                        className="mt-4 flex">
-                        <EmailInput
-                          name="email"
-                          id="email"
-                          defaultValue={router.query.email}
-                          className="focus:border-brand border-bookinglightest dark:border-darkgray-300 mt-0 block w-full rounded-sm border-gray-300 shadow-sm focus:ring-black dark:bg-black dark:text-white sm:text-sm"
-                          placeholder="rick.astley@cal.com"
-                        />
-                        <Button size="lg" type="submit" className="min-w-max" color="primary">
-                          {t("try_for_free")}
-                        </Button>
-                      </form>
-                    </div>
-                  </>
-                )}
               </div>
             </div>
           </div>

@@ -39,7 +39,7 @@ const ApiKeysView = () => {
 
   return (
     <>
-      <Meta title="API Keys" description="API keys allow other apps to communicate with Cal.com" />
+      <Meta title="API Keys" description="API keys allow other apps to communicate with PulseAppt.com" />
 
       <LicenseRequired>
         <>

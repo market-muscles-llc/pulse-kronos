@@ -24,7 +24,7 @@ function WizardForm<T extends DefaultStep>(props: { href: string; steps: T[]; co
   return (
     <div className="mx-auto print:w-full">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="mx-auto mb-8 h-8" src="https://cal.com/logo.svg" alt="Cal.com Logo" />
+      <img className="mx-auto mb-8 h-8" src="https://cal.com/logo.svg" alt="PulseAppt.com Logo" />
       <div
         className={classNames(
           "mb-8 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow print:divide-transparent print:shadow-transparent",

@@ -17,7 +17,7 @@ const WebhooksView = () => {
     <>
       <Meta
         title="Webhooks"
-        description="Receive meeting data in real-time when something happens in Cal.com"
+        description="Receive meeting data in real-time when something happens in PulseAppt.com"
       />
       <div>
         <Suspense fallback={<WebhookListSkeleton />}>

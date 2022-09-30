@@ -39,7 +39,7 @@ const LicenseRequired = ({ children, as = "", ...rest }: LicenseRequiredProps) =
             <>
               To enable this feature, get a deployment key at{" "}
               <a href={CONSOLE_URL} target="_blank" rel="noopener noreferrer" className="underline">
-                Cal.com console
+                PulseAppt.com console
               </a>{" "}
               and add it to your .env as <code>CALCOM_LICENSE_KEY</code>. If your team already has a license,
               please contact{" "}

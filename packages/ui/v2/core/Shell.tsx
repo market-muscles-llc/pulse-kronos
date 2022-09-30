@@ -124,7 +124,7 @@ const Layout = (props: LayoutProps) => {
   return (
     <>
       <HeadSeo
-        title={pageTitle ?? "Cal.com"}
+        title={pageTitle ?? "PulseAppt.com"}
         description={props.subtitle ? props.subtitle?.toString() : ""}
         nextSeoProps={{
           nofollow: true,
@@ -661,7 +661,7 @@ function DeploymentInfo() {
         fontSize: "0.5rem",
       }}
       className="mx-3 mt-1 mb-2 hidden opacity-50 lg:block">
-      &copy; {new Date().getFullYear()} Cal.com, Inc. v.{pkg.version + "-"}
+      &copy; {new Date().getFullYear()} PulseAppt.com, Inc. v.{pkg.version + "-"}
       {process.env.NEXT_PUBLIC_WEBSITE_URL === "https://cal.com" ? "h" : "sh"}
       <span className="lowercase" data-testid={`plan-${user?.plan.toLowerCase()}`}>
         -{user?.plan}

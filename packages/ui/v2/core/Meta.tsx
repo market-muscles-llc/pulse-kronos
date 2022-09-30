@@ -54,7 +54,7 @@ export default function Meta({ title, description, backButton }: MetaType) {
 
   return (
     <Head>
-      <title>{title} | Cal.com</title>
+      <title>{title} | PulseAppt.com</title>
       <meta name="description" content={description} />
     </Head>
   );

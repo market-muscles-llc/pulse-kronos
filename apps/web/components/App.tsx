@@ -259,9 +259,9 @@ const Component = ({
           </ul>
           <hr className="my-6" />
           <small className="leading-1 block text-gray-500">
-            Every app published on the Cal.com App Store is open source and thoroughly tested via peer
-            reviews. Nevertheless, Cal.com, Inc. does not endorse or certify these apps unless they are
-            published by Cal.com. If you encounter inappropriate content or behaviour please report it.
+            Every app published on the PulseAppt.com App Store is open source and thoroughly tested via peer
+            reviews. Nevertheless, PulseAppt.com, Inc. does not endorse or certify these apps unless they are
+            published by PulseAppt.com. If you encounter inappropriate content or behaviour please report it.
           </small>
           <a className="mt-2 block text-xs text-red-500" href="mailto:help@cal.com">
             <Icon.FiFlag className="inline h-3 w-3" /> Report App

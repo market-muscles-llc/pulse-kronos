@@ -24,7 +24,7 @@ import { getProviders, ETH_MESSAGE, SUPPORTED_CHAINS } from "../utils/ethereum";
 const { chains, provider } = configureChains(SUPPORTED_CHAINS, getProviders());
 
 const { connectors } = getDefaultWallets({
-  appName: "Cal.com",
+  appName: "PulseAppt.com",
   chains,
 });
 

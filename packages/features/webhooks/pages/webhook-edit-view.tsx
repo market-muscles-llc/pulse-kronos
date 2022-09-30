@@ -54,7 +54,7 @@ const EditWebhook = () => {
       <>
         <Meta
           title="Edit Webhook"
-          description="Receive meeting data in real-time when something happens in Cal.com"
+          description="Receive meeting data in real-time when something happens in PulseAppt.com"
           backButton
         />
         <WebhookForm

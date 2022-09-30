@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { User, Prisma } from "@prisma/client";
 import noop from "lodash/noop";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -374,6 +374,43 @@ function UserDropdown({ small }: { small?: boolean }) {
         )}
       </DropdownMenuContent>
     </Dropdown>
+  );
+}
+
+function BackToPulseLink() {
+  const query = useMeQuery();
+  const user = query.data;
+
+  // Prevent rendering dropdown if user isn't available.
+  // We don't want to show nameless user.
+  if (!user) {
+    return null;
+  }
+
+  let pulseLink = process.env.NEXT_PUBLIC_CONTROL_DEFAULT_RETURN_LINK;
+
+  const fqdn = ((user?.metadata as Prisma.JsonObject)?.fqdn as string) || null;
+
+  if (fqdn) {
+    pulseLink = process.env.NEXT_PUBLIC_CONTROL_PROTOCOL + fqdn + process.env.NEXT_PUBLIC_CONTROL_RETURN_PATH;
+
+    if (!localStorage.getItem("control.returnUrl")) {
+      localStorage.setItem("control.returnUrl", process.env.NEXT_PUBLIC_CONTROL_PROTOCOL + fqdn);
+    }
+  }
+
+  return (
+    <Link href={pulseLink}>
+      <a
+        aria-label="Back"
+        className="group mx-2 my-2 flex items-center rounded-sm px-2 py-2 text-sm font-medium text-neutral-500 hover:bg-gray-50 hover:text-neutral-900">
+        <Icon.FiArrowLeft
+          className="h-5 w-5 flex-shrink-0 text-neutral-400 group-hover:text-neutral-500 ltr:mr-3 rtl:ml-3"
+          aria-hidden="true"
+        />
+        <span className="hidden lg:inline">Back to Pulse</span>
+      </a>
+    </Link>
   );
 }
 
@@ -760,6 +797,8 @@ function SideBar() {
             <Logo small icon />
           </a>
         </Link>
+
+        <BackToPulseLink />
 
         <Navigation />
       </div>

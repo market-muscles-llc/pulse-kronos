@@ -1,0 +1,10 @@
+name: pulse-kronos
+services:
+  kronos:
+    type: postgres:14
+    portforward: 9071
+    creds:
+      database: kronos
+proxy:
+  kronos:
+    - kronos.lndo.site

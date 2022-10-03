@@ -78,24 +78,24 @@ function getNavigation(props: {
       icon: Icon.FiSliders,
       info: `event_advanced_tab_description`,
     },
-    {
-      name: "recurring",
-      href: `/event-types/${eventType.id}?tabName=recurring`,
-      icon: Icon.FiRepeat,
-      info: `recurring_event_tab_description`,
-    },
+    // {
+    //   name: "recurring",
+    //   href: `/event-types/${eventType.id}?tabName=recurring`,
+    //   icon: Icon.FiRepeat,
+    //   info: `recurring_event_tab_description`,
+    // },
     {
       name: "apps",
       href: `/event-types/${eventType.id}?tabName=apps`,
       icon: Icon.FiGrid,
       info: `${enabledAppsNumber} ${t("active")}`,
     },
-    {
-      name: "workflows",
-      href: `/event-types/${eventType.id}?tabName=workflows`,
-      icon: Icon.FiZap,
-      info: `${enabledWorkflowsNumber} ${t("active")}`,
-    },
+    // {
+    //   name: "workflows",
+    //   href: `/event-types/${eventType.id}?tabName=workflows`,
+    //   icon: Icon.FiZap,
+    //   info: `${enabledWorkflowsNumber} ${t("active")}`,
+    // },
   ];
 }
 

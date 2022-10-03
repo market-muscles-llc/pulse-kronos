@@ -249,69 +249,6 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
       />
       <hr />
       <Controller
-        name="hashedLink"
-        control={formMethods.control}
-        defaultValue={hashedUrl}
-        render={({ field: { value, onChange } }) => (
-          <>
-            <div className="flex space-x-3 ">
-              <Switch
-                data-testid="hashedLinkCheck"
-                name="hashedLinkCheck"
-                fitToHeight={true}
-                defaultChecked={!!value}
-                onCheckedChange={(e) => {
-                  setHashedLinkVisible(e);
-                  onChange(e ? hashedUrl : undefined);
-                }}
-              />
-              <div className="flex flex-col">
-                <Skeleton as={Label} className="text-sm font-semibold leading-none text-black">
-                  {t("private_link")}
-                </Skeleton>
-                <Skeleton as="p" className="-mt-2 text-sm leading-normal text-gray-600">
-                  {t("private_link_description")}
-                </Skeleton>
-              </div>
-            </div>
-
-            {hashedLinkVisible && (
-              <div className="">
-                <TextField
-                  disabled
-                  name="hashedLink"
-                  label={t("private_link_label")}
-                  data-testid="generated-hash-url"
-                  type="text"
-                  hint={t("private_link_hint")}
-                  defaultValue={placeholderHashedLink}
-                  addOnSuffix={
-                    <Tooltip
-                      content={eventType.hashedLink ? t("copy_to_clipboard") : t("enabled_after_update")}>
-                      <Button
-                        color="minimal"
-                        onClick={() => {
-                          navigator.clipboard.writeText(placeholderHashedLink);
-                          if (eventType.hashedLink) {
-                            showToast(t("private_link_copied"), "success");
-                          } else {
-                            showToast(t("enabled_after_update_description"), "warning");
-                          }
-                        }}
-                        className="hover:stroke-3 hover:bg-transparent hover:text-black"
-                        type="button">
-                        <Icon.FiCopy />
-                      </Button>
-                    </Tooltip>
-                  }
-                />
-              </div>
-            )}
-          </>
-        )}
-      />
-      <hr />
-      <Controller
         name="seatsPerTimeSlotEnabled"
         control={formMethods.control}
         defaultValue={!!eventType.seatsPerTimeSlot}

@@ -15,8 +15,38 @@ const PersonInfo = ({ name = "", email = "", role = "" }) => (
   </div>
 );
 
-export function WhoInfo(props: { calEvent: CalendarEvent; t: TFunction }) {
+export function WhoInfo(props: { calEvent: CalendarEvent; attendee: Person; t: TFunction }) {
   const { t } = props;
+
+  if (
+    props.attendee.email === props.calEvent.attendees[0].email ||
+    props.calEvent.organizer.email === props.attendee.email
+  ) {
+    return (
+      <Info
+        label={t("who")}
+        description={
+          <>
+            <PersonInfo
+              name={props.calEvent.organizer.name}
+              role={t("organizer")}
+              email={props.calEvent.organizer.email}
+            />
+            {props.calEvent.attendees.map((attendee) => (
+              <PersonInfo
+                key={attendee.id || attendee.name}
+                name={attendee.name}
+                role={t("guest")}
+                email={attendee.email}
+              />
+            ))}
+          </>
+        }
+        withSpacer
+      />
+    );
+  }
+
   return (
     <Info
       label={t("who")}
@@ -27,14 +57,12 @@ export function WhoInfo(props: { calEvent: CalendarEvent; t: TFunction }) {
             role={t("organizer")}
             email={props.calEvent.organizer.email}
           />
-          {props.calEvent.attendees.map((attendee) => (
-            <PersonInfo
-              key={attendee.id || attendee.name}
-              name={attendee.name}
-              role={t("guest")}
-              email={attendee.email}
-            />
-          ))}
+          <PersonInfo
+            key={props.attendee.id || props.attendee.name}
+            name={props.attendee.name}
+            role={t("guest")}
+            email={props.attendee.email}
+          />
         </>
       }
       withSpacer

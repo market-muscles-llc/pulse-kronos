@@ -44,10 +44,12 @@ export default class AttendeeScheduledEmail extends BaseEmail {
       description: this.getTextBody(),
       duration: { minutes: dayjs(this.calEvent.endTime).diff(dayjs(this.calEvent.startTime), "minute") },
       organizer: { name: this.calEvent.organizer.name, email: this.calEvent.organizer.email },
-      attendees: this.calEvent.attendees.map((attendee: Person) => ({
-        name: attendee.name,
-        email: attendee.email,
-      })),
+      attendees: [
+        {
+          name: this.attendee.name,
+          email: this.attendee.email,
+        },
+      ],
       ...{ recurrenceRule },
       status: "CONFIRMED",
     });
@@ -65,7 +67,7 @@ export default class AttendeeScheduledEmail extends BaseEmail {
       },
       to: `${this.attendee.name} <${this.attendee.email}>`,
       from: `${this.calEvent.organizer.name} <${this.getMailerOptions().from}>`,
-      replyTo: [...this.calEvent.attendees.map(({ email }) => email), this.calEvent.organizer.email],
+      replyTo: [this.attendee.email, this.calEvent.organizer.email],
       subject: `${this.t("confirmed_event_type_subject", {
         eventType: this.calEvent.type,
         name: this.calEvent.team?.name || this.calEvent.organizer.name,

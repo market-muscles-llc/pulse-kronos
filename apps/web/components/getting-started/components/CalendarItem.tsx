@@ -10,7 +10,7 @@ interface ICalendarItem {
   type: App["type"];
 }
 
-function ConnectButtonContent({ type }) {
+function ConnectButtonContent({ type }: { type?: string }) {
   const { t } = useLocale();
 
   if (type === "google_calendar") {

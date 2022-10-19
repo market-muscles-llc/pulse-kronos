@@ -18,6 +18,8 @@ function PhoneInput<FormValues>({ control, name, className, ...rest }: PhoneInpu
       international
       name={name}
       control={control}
+      // TODO: https://www.npmjs.com/package/react-phone-number-input
+      defaultCountry="US"
       countrySelectProps={{ className: "text-black" }}
       numberInputProps={{
         className: "border-0 text-sm focus:ring-0 dark:bg-darkgray-100 dark:placeholder:text-darkgray-600",

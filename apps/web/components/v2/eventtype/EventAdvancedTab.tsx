@@ -321,7 +321,7 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
         defaultValue={hashedUrl}
         render={({ field: { value, onChange } }) => (
           <>
-            <div className="flex space-x-3 ">
+            <div className="hidden space-x-3">
               <Switch
                 data-testid="hashedLinkCheck"
                 name="hashedLinkCheck"
@@ -377,7 +377,6 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
           </>
         )}
       />
-      <hr />
       <Controller
         name="seatsPerTimeSlotEnabled"
         control={formMethods.control}

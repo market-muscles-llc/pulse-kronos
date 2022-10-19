@@ -140,7 +140,7 @@ const AppearanceView = () => {
         onClick={() => window.open(`${WEBAPP_URL}/${user.username}/${user.eventTypes[0].title}`, "_blank")}>
         Preview
       </Button> */}
-        <hr className="border-1 my-8 border-neutral-200" />
+        {/* <hr className="border-1 my-8 border-neutral-200" />
         <Controller
           name="hideBranding"
           control={formMethods.control}
@@ -164,7 +164,7 @@ const AppearanceView = () => {
               </div>
             </>
           )}
-        />
+        /> */}
         <Button type="submit" color="primary" className="mt-8">
           {t("update")}
         </Button>

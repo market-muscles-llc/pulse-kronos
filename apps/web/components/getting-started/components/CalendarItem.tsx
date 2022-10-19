@@ -33,10 +33,11 @@ function ConnectButtonContent({ type }: { type?: string }) {
 const CalendarItem = (props: ICalendarItem) => {
   const { title, imageSrc, type } = props;
   return (
-    <div className="flex flex-row items-center p-5">
-      <img src={imageSrc} alt={title} className="h-8 w-8" />
-      <p className="mx-3 text-sm font-bold">{title}</p>
-
+    <div className="flex flex-row items-center justify-between p-5">
+      <div className="flex items-center space-x-3">
+        <img src={imageSrc} alt={title} className="h-8 w-8" />
+        <p className="text-sm font-bold">{title}</p>
+      </div>
       <InstallAppButtonWithoutPlanCheck
         type={type}
         render={(buttonProps) => (

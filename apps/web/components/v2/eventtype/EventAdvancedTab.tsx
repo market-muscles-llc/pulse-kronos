@@ -1,12 +1,13 @@
 import autoAnimate from "@formkit/auto-animate";
 import { EventTypeCustomInput } from "@prisma/client/";
 import Link from "next/link";
-import { EventTypeSetupInfered, FormValues } from "pages/v2/event-types/[type]";
+import { EventTypeSetupInfered, FormValues } from "pages/event-types/[type]";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import short from "short-uuid";
 import { v5 as uuidv5 } from "uuid";
 
+import DestinationCalendarSelector from "@calcom/features/calendars/DestinationCalendarSelector";
 import { CAL_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
@@ -14,7 +15,6 @@ import { Icon } from "@calcom/ui";
 import {
   Button,
   CustomInputItem,
-  DestinationCalendarSelector,
   Dialog,
   DialogContent,
   Label,
@@ -24,6 +24,7 @@ import {
   TextField,
   Tooltip,
 } from "@calcom/ui/v2";
+import CheckboxField from "@calcom/ui/v2/core/form/Checkbox";
 
 import CustomInputTypeForm from "@components/v2/eventtype/CustomInputTypeForm";
 
@@ -40,6 +41,7 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
   const { t } = useLocale();
   const [showEventNameTip, setShowEventNameTip] = useState(false);
   const [hashedLinkVisible, setHashedLinkVisible] = useState(!!eventType.hashedLink);
+  const [redirectUrlVisible, setRedirectUrlVisible] = useState(!!eventType.successRedirectUrl);
   const [hashedUrl, setHashedUrl] = useState(eventType.hashedLink?.link);
   const [seatsInputVisible, setSeatsInputVisible] = useState(!!eventType.seatsPerTimeSlot);
   const [customInputs, setCustomInputs] = useState<EventTypeCustomInput[]>(
@@ -249,6 +251,134 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
       />
       <hr />
       <Controller
+        name="metadata.additionalNotesRequired"
+        control={formMethods.control}
+        defaultValue={!!eventType.metadata.additionalNotesRequired}
+        render={({ field: { value, onChange } }) => (
+          <div className="flex space-x-3 ">
+            <Switch
+              name="additionalNotesRequired"
+              fitToHeight={true}
+              checked={value}
+              onCheckedChange={(e) => onChange(e)}
+            />
+            <div className="flex flex-col">
+              <Skeleton as={Label} className="text-sm font-semibold leading-none text-black">
+                {t("require_additional_notes")}
+              </Skeleton>
+              <Skeleton as="p" className="-mt-2 text-sm leading-normal text-gray-600">
+                {t("require_additional_notes_description")}
+              </Skeleton>
+            </div>
+          </div>
+        )}
+      />
+      <hr />
+      <Controller
+        name="successRedirectUrl"
+        control={formMethods.control}
+        defaultValue={hashedUrl}
+        render={({ field: { value, onChange } }) => (
+          <>
+            <div className="flex space-x-3 ">
+              <Switch
+                name="successRedirectUrlCheck"
+                fitToHeight={true}
+                defaultChecked={redirectUrlVisible}
+                onCheckedChange={(e) => {
+                  setRedirectUrlVisible(e);
+                  onChange(e ? value : "");
+                }}
+              />
+              <div className="flex flex-col">
+                <Skeleton as={Label} className="text-sm font-semibold leading-none text-black">
+                  {t("redirect_success_booking")}
+                </Skeleton>
+                <Skeleton as="p" className="-mt-2 text-sm leading-normal text-gray-600">
+                  {t("redirect_url_description")}
+                </Skeleton>
+              </div>
+            </div>
+            {redirectUrlVisible && (
+              <div className="">
+                <TextField
+                  label={t("redirect_success_booking")}
+                  placeholder={t("external_redirect_url")}
+                  required={redirectUrlVisible}
+                  type="text"
+                  defaultValue={eventType.successRedirectUrl || ""}
+                  {...formMethods.register("successRedirectUrl")}
+                />
+              </div>
+            )}
+          </>
+        )}
+      />
+      <hr />
+      <Controller
+        name="hashedLink"
+        control={formMethods.control}
+        defaultValue={hashedUrl}
+        render={({ field: { value, onChange } }) => (
+          <>
+            <div className="flex space-x-3 ">
+              <Switch
+                data-testid="hashedLinkCheck"
+                name="hashedLinkCheck"
+                fitToHeight={true}
+                defaultChecked={!!value}
+                onCheckedChange={(e) => {
+                  setHashedLinkVisible(e);
+                  onChange(e ? hashedUrl : undefined);
+                }}
+              />
+              <div className="flex flex-col">
+                <Skeleton as={Label} className="text-sm font-semibold leading-none text-black">
+                  {t("private_link")}
+                </Skeleton>
+                <Skeleton as="p" className="-mt-2 text-sm leading-normal text-gray-600">
+                  {t("private_link_description")}
+                </Skeleton>
+              </div>
+            </div>
+
+            {hashedLinkVisible && (
+              <div className="">
+                <TextField
+                  disabled
+                  name="hashedLink"
+                  label={t("private_link_label")}
+                  data-testid="generated-hash-url"
+                  type="text"
+                  hint={t("private_link_hint")}
+                  defaultValue={placeholderHashedLink}
+                  addOnSuffix={
+                    <Tooltip
+                      content={eventType.hashedLink ? t("copy_to_clipboard") : t("enabled_after_update")}>
+                      <Button
+                        color="minimal"
+                        onClick={() => {
+                          navigator.clipboard.writeText(placeholderHashedLink);
+                          if (eventType.hashedLink) {
+                            showToast(t("private_link_copied"), "success");
+                          } else {
+                            showToast(t("enabled_after_update_description"), "warning");
+                          }
+                        }}
+                        className="hover:stroke-3 hover:bg-transparent hover:text-black"
+                        type="button">
+                        <Icon.FiCopy />
+                      </Button>
+                    </Tooltip>
+                  }
+                />
+              </div>
+            )}
+          </>
+        )}
+      />
+      <hr />
+      <Controller
         name="seatsPerTimeSlotEnabled"
         control={formMethods.control}
         defaultValue={!!eventType.seatsPerTimeSlot}
@@ -272,8 +402,12 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
               fitToHeight={true}
             />
             <div className="flex flex-col">
-              <Label className="text-sm font-semibold leading-none text-black">{t("offer_seats")}</Label>
-              <p className="-mt-2 text-sm leading-normal text-gray-600">{t("offer_seats_description")}</p>
+              <Skeleton as={Label} className="text-sm font-semibold leading-none text-black">
+                {t("offer_seats")}
+              </Skeleton>
+              <Skeleton as="p" className="-mt-2 text-sm leading-normal text-gray-600">
+                {t("offer_seats_description")}
+              </Skeleton>
             </div>
           </div>
         )}
@@ -296,6 +430,13 @@ export const EventAdvancedTab = ({ eventType, team }: Pick<EventTypeSetupInfered
                   onChange(Number(e.target.value));
                 }}
               />
+              <div className="mt-6">
+                <CheckboxField
+                  description={t("show_attendees")}
+                  onChange={(e) => formMethods.setValue("seatsShowAttendees", e.target.checked)}
+                  defaultChecked={!!eventType.seatsShowAttendees}
+                />
+              </div>
             </div>
           )}
         />

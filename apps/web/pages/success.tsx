@@ -365,7 +365,7 @@ export default function Success(props: SuccessProps) {
                               <p className="text-bookinglight">{bookingInfo.user.email}</p>
                             </div>
                           )}
-                          {!!eventType.seatsShowAttendees
+                          {!eventType.seatsShowAttendees
                             ? bookingInfo?.attendees
                                 .filter((attendee) => attendee.email === email)
                                 .map((attendee) => (

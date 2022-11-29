@@ -3,7 +3,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/r
 import classNames from "classnames";
 import { createEvent } from "ics";
 import { GetServerSidePropsContext } from "next";
-import { useSession } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
@@ -849,7 +849,7 @@ const handleSeatsEventTypeOnBooking = (
   booking: Partial<
     Prisma.BookingGetPayload<{ include: { attendees: { select: { name: true; email: true } } } }>
   >,
-  email: string
+  email: string | null
 ) => {
   if (eventType?.seatsPerTimeSlot !== null) {
     // @TODO: right now bookings with seats doesn't save every description that its entered by every user
@@ -857,15 +857,21 @@ const handleSeatsEventTypeOnBooking = (
   } else {
     return;
   }
+
   if (!eventType.seatsShowAttendees) {
-    const attendee = booking?.attendees?.find((a) => a.email === email);
-    booking["attendees"] = attendee ? [attendee] : [];
+    if (email !== null) {
+      const attendee = booking?.attendees?.find((a) => a.email === email);
+      booking["attendees"] = attendee ? [attendee] : [];
+    } else {
+      booking["attendees"] = [];
+    }
   }
   return;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const ssr = await ssrInit(context);
+  const session = await getSession(context);
   const parsedQuery = schema.safeParse(context.query);
   if (!parsedQuery.success) return { notFound: true };
   const { uid, email, eventTypeSlug } = parsedQuery.data;
@@ -967,7 +973,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     slug: eventType.team?.slug || eventType.users[0]?.username || null,
   };
 
-  if (bookingInfo !== null && email) {
+  const userIsOwner = !!(session?.user?.id && eventType.users.find((user) => (user.id = session.user.id)));
+
+  if (!userIsOwner && bookingInfo !== null) {
     handleSeatsEventTypeOnBooking(eventType, bookingInfo, email);
   }
 

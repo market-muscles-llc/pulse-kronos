@@ -281,59 +281,6 @@ const ProfileView = () => {
           loading={mutation.isLoading}>
           {t("update")}
         </Button>
-
-        <hr className="my-6  border-neutral-200" />
-
-        <Label>{t("danger_zone")}</Label>
-        {/* Delete account Dialog */}
-        <Dialog open={deleteAccountOpen} onOpenChange={setDeleteAccountOpen}>
-          <DialogTrigger asChild>
-            <Button
-              data-testid="delete-account"
-              color="destructive"
-              className="mt-1 border-2"
-              StartIcon={Icon.FiTrash2}>
-              {t("delete_account")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent
-            title={t("delete_account_modal_title")}
-            description={t("confirm_delete_account_modal")}
-            type="creation"
-            Icon={Icon.FiAlertTriangle}>
-            <>
-              <p className="mb-7">{t("delete_account_confirmation_message")}</p>
-              {isCALIdentityProviver && (
-                <PasswordField
-                  data-testid="password"
-                  name="password"
-                  id="password"
-                  autoComplete="current-password"
-                  required
-                  label="Password"
-                  ref={passwordRef}
-                />
-              )}
-
-              {user?.twoFactorEnabled && isCALIdentityProviver && (
-                <Form handleSubmit={onConfirm} className="pb-4" form={form}>
-                  <TwoFactor center={false} />
-                </Form>
-              )}
-
-              {hasDeleteErrors && <Alert severity="error" title={deleteErrorMessage} />}
-              <DialogFooter>
-                <Button
-                  color="primary"
-                  data-testid="delete-account-confirm"
-                  onClick={(e) => onConfirmButton(e)}>
-                  {t("delete_my_account")}
-                </Button>
-                <DialogClose />
-              </DialogFooter>
-            </>
-          </DialogContent>
-        </Dialog>
       </Form>
 
       {/* If changing email, confirm password */}

@@ -161,34 +161,6 @@ const AppearanceView = () => {
         onClick={() => window.open(`${WEBAPP_URL}/${user.username}/${user.eventTypes[0].title}`, "_blank")}>
         Preview
       </Button> */}
-      <hr className="border-1 my-8 border-neutral-200" />
-      <Controller
-        name="hideBranding"
-        control={formMethods.control}
-        defaultValue={user.hideBranding}
-        render={({ field: { value } }) => (
-          <>
-            <div className="flex w-full text-sm">
-              <div className="mr-1 flex-grow">
-                <div className="flex items-center">
-                  <p className="mr-2 font-semibold">{t("disable_cal_branding")}</p>
-                  <Badge variant="gray">{t("pro")}</Badge>
-                </div>
-                <p className="mt-0.5  text-gray-600">{t("removes_cal_branding")}</p>
-              </div>
-              <div className="flex-none">
-                <Switch
-                  id="hideBranding"
-                  onCheckedChange={(checked) =>
-                    formMethods.setValue("hideBranding", checked, { shouldDirty: true })
-                  }
-                  checked={value}
-                />
-              </div>
-            </div>
-          </>
-        )}
-      />
       <Button
         disabled={isDisabled}
         type="submit"

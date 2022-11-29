@@ -479,7 +479,7 @@ export default function Success(props: SuccessProps) {
                     )}
                   </div>
                 </div>
-                {!needsConfirmation &&
+                {(!needsConfirmation || !userIsOwner) &&
                   !isCancelled &&
                   (!isCancellationMode ? (
                     <>
@@ -986,7 +986,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      hideBranding: eventType.team ? eventType.team.hideBranding : eventType.users[0].hideBranding,
+      hideBranding: true,
       profile,
       eventType,
       recurringBookings: recurringBookings ? recurringBookings.map((obj) => obj.startTime.toString()) : null,

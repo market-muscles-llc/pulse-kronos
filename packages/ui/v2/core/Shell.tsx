@@ -520,7 +520,6 @@ export type NavigationItemType = {
   }) => boolean;
 };
 
-const requiredCredentialNavigationItems = ["Routing Forms"];
 const MORE_SEPARATOR_NAME = "more";
 
 const navigation: NavigationItemType[] = [

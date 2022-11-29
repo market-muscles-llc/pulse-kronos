@@ -230,7 +230,7 @@ export default async function main() {
       client_secret: process.env.ZOOM_CLIENT_SECRET,
     });
   }
-  await createApp("jitsi", "jitsivideo", ["video"], "jitsi_video");
+  // await createApp("jitsi", "jitsivideo", ["video"], "jitsi_video");
   // Other apps
   if (process.env.HUBSPOT_CLIENT_ID && process.env.HUBSPOT_CLIENT_SECRET) {
     await createApp("hubspot", "hubspot", ["other"], "hubspot_other_calendar", {
@@ -244,7 +244,7 @@ export default async function main() {
       consumer_secret: process.env.SALESFORCE_CONSUMER_SECRET,
     });
   }
-  await createApp("wipe-my-cal", "wipemycalother", ["other"], "wipemycal_other");
+  // await createApp("wipe-my-cal", "wipemycalother", ["other"], "wipemycal_other");
   if (process.env.GIPHY_API_KEY) {
     await createApp("giphy", "giphy", ["other"], "giphy_other", {
       api_key: process.env.GIPHY_API_KEY,
@@ -267,7 +267,7 @@ export default async function main() {
   }
 
   // Web3 apps
-  await createApp("huddle01", "huddle01video", ["web3", "video"], "huddle01_video");
+  // await createApp("huddle01", "huddle01video", ["web3", "video"], "huddle01_video");
 
   // Payment apps
   if (

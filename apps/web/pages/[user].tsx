@@ -1,4 +1,3 @@
-import { UserPlan } from "@prisma/client";
 import classNames from "classnames";
 import { GetServerSidePropsContext } from "next";
 import dynamic from "next/dynamic";
@@ -13,6 +12,7 @@ import {
   useEmbedStyles,
   useIsEmbed,
 } from "@calcom/embed-core/embed-iframe";
+import EmptyPage from "@calcom/features/eventtypes/components/EmptyPage";
 import CustomBranding from "@calcom/lib/CustomBranding";
 import defaultEvents, {
   getDynamicEventDescription,
@@ -26,19 +26,19 @@ import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calco
 import prisma from "@calcom/prisma";
 import { baseEventTypeSelect } from "@calcom/prisma/selects";
 import { EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
-import { BadgeCheckIcon, Icon } from "@calcom/ui/Icon";
+import { BadgeCheckIcon, EventTypeDescriptionLazy as EventTypeDescription, Icon } from "@calcom/ui";
 
 import { useExposePlanGlobally } from "@lib/hooks/useExposePlanGlobally";
 import { inferSSRProps } from "@lib/types/inferSSRProps";
+import { EmbedProps } from "@lib/withEmbedSsr";
 
 import AvatarGroup from "@components/ui/AvatarGroup";
 import { AvatarSSR } from "@components/ui/AvatarSSR";
 
 import { ssrInit } from "@server/lib/ssr";
 
-const EventTypeDescription = dynamic(() => import("@calcom/ui/v2/modules/event-types/EventTypeDescription"));
 const HeadSeo = dynamic(() => import("@components/seo/head-seo"));
-export default function User(props: inferSSRProps<typeof getServerSideProps>) {
+export default function User(props: inferSSRProps<typeof getServerSideProps> & EmbedProps) {
   const { users, profile, eventTypes, isDynamicGroup, dynamicNames, dynamicUsernames, isSingleUser } = props;
   const [user] = users; //To be used when we only have a single user, not dynamic group
   useTheme(user.theme);
@@ -86,7 +86,7 @@ export default function User(props: inferSSRProps<typeof getServerSideProps>) {
     </ul>
   );
 
-  const isEmbed = useIsEmbed();
+  const isEmbed = useIsEmbed(props.isEmbed);
   const eventTypeListItemEmbedStyles = useEmbedStyles("eventTypeListItem");
   const shouldAlignCentrallyInEmbed = useEmbedNonStylesConfig("align") !== "left";
   const shouldAlignCentrally = !isEmbed || shouldAlignCentrallyInEmbed;
@@ -102,7 +102,7 @@ export default function User(props: inferSSRProps<typeof getServerSideProps>) {
       telemetry.event(telemetryEventTypes.embedView, collectPageParameters("/[user]"));
     }
   }, [telemetry, router.asPath]);
-
+  const isEventListEmpty = eventTypes.length === 0;
   return (
     <>
       <HeadSeo
@@ -147,7 +147,11 @@ export default function User(props: inferSSRProps<typeof getServerSideProps>) {
             </div>
           )}
           <div
-            className="rounded-md border border-neutral-200 dark:border-neutral-700 dark:hover:border-neutral-600"
+            className={classNames(
+              "rounded-md ",
+              !isEventListEmpty &&
+                "border border-neutral-200 dark:border-neutral-700 dark:hover:border-neutral-600"
+            )}
             data-testid="event-types">
             {user.away ? (
               <div className="overflow-hidden rounded-sm border dark:border-gray-900">
@@ -194,16 +198,7 @@ export default function User(props: inferSSRProps<typeof getServerSideProps>) {
               ))
             )}
           </div>
-          {eventTypes.length === 0 && (
-            <div className="overflow-hidden rounded-sm border dark:border-gray-900">
-              <div className="p-8 text-center text-gray-400 dark:text-white">
-                <h2 className="font-cal mb-2 text-3xl text-gray-600 dark:text-white">
-                  {t("uh_oh") as string}
-                </h2>
-                <p className="mx-auto max-w-md">{t("no_event_types_have_been_setup") as string}</p>
-              </div>
-            </div>
-          )}
+          {isEventListEmpty && <EmptyPage name={user.name ?? "User"} />}
         </main>
         <Toaster position="bottom-right" />
       </div>
@@ -287,6 +282,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   if (!users.length) {
     return {
       notFound: true,
+    } as {
+      notFound: true;
     };
   }
   const isDynamicGroup = users.length > 1;

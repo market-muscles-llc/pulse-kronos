@@ -18,7 +18,7 @@ export const test = base.extend<Fixtures>({
 
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
-              window.initialBodyDisplay = document.body.style.display;
+              window.initialBodyVisibility = document.body.style.visibility;
 
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
@@ -74,7 +74,8 @@ export const test = base.extend<Fixtures>({
       if (!page.isClosed()) {
         return await page.evaluate(
           ({ actionType, calNamespace }) => {
-            //@ts-ignore
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             return window.eventsFiredStoreForPlaywright[`${actionType}-${calNamespace}`];
           },
           { actionType, calNamespace }

@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 import { useIsEmbed } from "@calcom/embed-core/embed-iframe";
 import { CAL_URL } from "@calcom/lib/constants";
@@ -12,10 +12,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import useTheme from "@calcom/lib/hooks/useTheme";
 import { getTeamWithMembers } from "@calcom/lib/server/queries/teams";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
-import { Icon } from "@calcom/ui/Icon";
-import { Avatar } from "@calcom/ui/v2";
-import { Button } from "@calcom/ui/v2/core";
-import EventTypeDescription from "@calcom/ui/v2/modules/event-types/EventTypeDescription";
+import { Avatar, Button, EventTypeDescription, Icon } from "@calcom/ui";
 
 import { useExposePlanGlobally } from "@lib/hooks/useExposePlanGlobally";
 import { useToggleQuery } from "@lib/hooks/useToggleQuery";
@@ -51,7 +48,7 @@ function TeamPage({ team }: TeamPageProps) {
             "dark:bg-darkgray-100 dark:border-darkgray-200 group relative rounded-sm border border-neutral-200 bg-white hover:bg-gray-50 dark:hover:border-neutral-600",
             !isEmbed && "bg-white"
           )}>
-          <Link href={`${team.slug}/${type.slug}`}>
+          <Link href={`/team/${team.slug}/${type.slug}`}>
             <a className="flex justify-between px-6 py-4" data-testid="event-type-link">
               <div className="flex-shrink">
                 <div className="flex flex-wrap items-center space-x-2">
@@ -83,7 +80,6 @@ function TeamPage({ team }: TeamPageProps) {
 
   return (
     <div>
-      <HeadSeo title={teamName} description={teamName} />
       <HeadSeo
         title={teamName}
         description={teamName}
@@ -92,7 +88,7 @@ function TeamPage({ team }: TeamPageProps) {
           profile: { name: `${team.name}`, image: getPlaceholderAvatar(team.logo, team.name) },
         }}
       />
-      <div className="dark:bg-darkgray-50 h-screen rounded-md bg-gray-100 px-4 pt-12 pb-12">
+      <main className="dark:bg-darkgray-50 mx-auto max-w-3xl rounded-md bg-gray-100 px-4 pt-12 pb-12">
         <div className="max-w-96 mx-auto mb-8 text-center">
           <Avatar alt={teamName} imageSrc={getPlaceholderAvatar(team.logo, team.name)} size="lg" />
           <p className="font-cal dark:text-darkgray-900 mb-2 text-2xl tracking-wider text-gray-900">
@@ -117,7 +113,7 @@ function TeamPage({ team }: TeamPageProps) {
               </div>
             </div>
 
-            <aside className="mt-8 mb-16 flex justify-center text-center dark:text-white">
+            <aside className="mt-8 flex justify-center text-center dark:text-white">
               <Button
                 color="minimal"
                 EndIcon={Icon.FiArrowRight}
@@ -129,7 +125,7 @@ function TeamPage({ team }: TeamPageProps) {
             </aside>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
@@ -139,7 +135,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   const team = await getTeamWithMembers(undefined, slug);
 
-  if (!team) return { notFound: true };
+  if (!team) return { notFound: true } as { notFound: true };
 
   const members = team.members.filter((member) => member.plan !== UserPlan.FREE);
 

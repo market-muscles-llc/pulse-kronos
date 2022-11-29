@@ -2,7 +2,6 @@ import DailyIframe from "@daily-co/daily-js";
 import { NextPageContext } from "next";
 import { getSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 import { useEffect } from "react";
 
 import { SEO_IMG_OGIMG_VIDEO, WEBSITE_URL } from "@calcom/lib/constants";
@@ -49,35 +48,30 @@ export default function JoinCall(props: JoinCallPageProps) {
   return (
     <>
       <Head>
-        <title>PulseAppt.com Video</title>
-        <meta name="title" content="PulseAppt.com Video" />
+        <title>Cal.com Video</title>
+        <meta name="title" content="Cal.com Video" />
         <meta name="description" content={t("quick_video_meeting")} />
         <meta property="og:image" content={SEO_IMG_OGIMG_VIDEO} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${WEBSITE_URL}/video`} />
-        <meta property="og:title" content="PulseAppt.com Video" />
+        <meta property="og:title" content="Cal.com Video" />
         <meta property="og:description" content={t("quick_video_meeting")} />
         <meta property="twitter:image" content={SEO_IMG_OGIMG_VIDEO} />
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content={`${WEBSITE_URL}/video`} />
-        <meta property="twitter:title" content="PulseAppt.com Video" />
+        <meta property="twitter:title" content="Cal.com Video" />
         <meta property="twitter:description" content={t("quick_video_meeting")} />
       </Head>
       <div style={{ zIndex: 2, position: "relative" }}>
-        <Link href="/" passHref>
-          {
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              className="h-5·w-auto fixed z-10 hidden sm:inline-block"
-              src={`${WEBSITE_URL}/cal-logo-word-dark.svg`}
-              alt="PulseAppt.com Logo"
-              style={{
-                top: 46,
-                left: 24,
-              }}
-            />
-          }
-        </Link>
+        <img
+          className="h-5·w-auto fixed z-10 hidden sm:inline-block"
+          src={`${WEBSITE_URL}/cal-logo-word-dark.svg`}
+          alt="Cal.com Logo"
+          style={{
+            top: 46,
+            left: 24,
+          }}
+        />
       </div>
     </>
   );
@@ -142,7 +136,7 @@ export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession();
 
   // set meetingPassword to null for guests
-  if (session?.userid !== bookingObj.user?.id) {
+  if (session?.user.id !== bookingObj.user?.id) {
     bookingObj.references.forEach((bookRef) => {
       bookRef.meetingPassword = null;
     });

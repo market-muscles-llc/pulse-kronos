@@ -3,6 +3,7 @@ import { Page, Frame, test, expect } from "@playwright/test";
 import prisma from "@calcom/prisma";
 
 export function todo(title: string) {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   test.skip(title, () => {});
 }
 export const deleteAllBookingsByEmail = async (email: string) =>
@@ -55,7 +56,7 @@ export const getEmbedIframe = async ({ page, pathname }: { page: Page; pathname:
     return null;
   }
   const u = new URL(embedIframe.url());
-  if (u.pathname === pathname) {
+  if (u.pathname === pathname + "/embed") {
     return embedIframe;
   }
   return null;

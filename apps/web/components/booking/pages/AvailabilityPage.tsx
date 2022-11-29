@@ -1,10 +1,9 @@
-// Get router variables
-import autoAnimate from "@formkit/auto-animate";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { EventType } from "@prisma/client";
 import * as Popover from "@radix-ui/react-popover";
 import { TFunction } from "next-i18next";
 import { useRouter } from "next/router";
-import { useReducer, useEffect, useMemo, useState, useRef } from "react";
+import { useReducer, useEffect, useMemo, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { FormattedNumber, IntlProvider } from "react-intl";
 import { z } from "zod";
@@ -27,14 +26,15 @@ import useTheme from "@calcom/lib/hooks/useTheme";
 import notEmpty from "@calcom/lib/notEmpty";
 import { getRecurringFreq } from "@calcom/lib/recurringStrings";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
-import { detectBrowserTimeFormat, getIs24hClockFromLocalStorage } from "@calcom/lib/timeFormat";
+import { detectBrowserTimeFormat, setIs24hClockInLocalStorage, TimeFormat } from "@calcom/lib/timeFormat";
+import { EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
 import { trpc } from "@calcom/trpc/react";
-import { Icon } from "@calcom/ui/Icon";
-import DatePicker from "@calcom/ui/v2/modules/booker/DatePicker";
+import { Icon, DatePicker } from "@calcom/ui";
 
 import { timeZone as localStorageTimeZone } from "@lib/clock";
 // import { timeZone } from "@lib/clock";
 import { useExposePlanGlobally } from "@lib/hooks/useExposePlanGlobally";
+import useRouterQuery from "@lib/hooks/useRouterQuery";
 import { isBrandingHidden } from "@lib/isBrandingHidden";
 
 import Gates, { Gate, GateState } from "@components/Gates";
@@ -48,6 +48,7 @@ import type { AvailabilityPageProps } from "../../../pages/[user]/[type]";
 import type { DynamicAvailabilityPageProps } from "../../../pages/d/[link]/[slug]";
 import type { AvailabilityTeamPageProps } from "../../../pages/team/[slug]/[type]";
 
+// Get router variables
 const GoBackToPreviousPage = ({ t }: { t: TFunction }) => {
   const router = useRouter();
   const path = router.asPath.split("/");
@@ -71,6 +72,7 @@ const useSlots = ({
   endTime,
   usernameList,
   timeZone,
+  duration,
 }: {
   eventTypeId: number;
   eventTypeSlug: string;
@@ -78,20 +80,21 @@ const useSlots = ({
   endTime?: Dayjs;
   usernameList: string[];
   timeZone?: string;
+  duration?: string;
 }) => {
-  const { data, isLoading, isPaused } = trpc.useQuery(
-    [
-      "viewer.public.slots.getSchedule",
-      {
-        eventTypeId,
-        eventTypeSlug,
-        usernameList,
-        startTime: startTime?.toISOString() || "",
-        endTime: endTime?.toISOString() || "",
-        timeZone,
-      },
-    ],
-    { enabled: !!startTime && !!endTime }
+  const { data, isLoading, isPaused } = trpc.viewer.public.slots.getSchedule.useQuery(
+    {
+      eventTypeId,
+      eventTypeSlug,
+      usernameList,
+      startTime: startTime?.toISOString() || "",
+      endTime: endTime?.toISOString() || "",
+      timeZone,
+      duration,
+    },
+    {
+      enabled: !!startTime && !!endTime,
+    }
   );
   const [cachedSlots, setCachedSlots] = useState<NonNullable<typeof data>["slots"]>({});
 
@@ -108,6 +111,7 @@ const useSlots = ({
 const SlotPicker = ({
   eventType,
   timeFormat,
+  onTimeFormatChange,
   timeZone,
   recurringEventCount,
   users,
@@ -116,7 +120,8 @@ const SlotPicker = ({
   ethSignature,
 }: {
   eventType: Pick<EventType, "id" | "schedulingType" | "slug">;
-  timeFormat: string;
+  timeFormat: TimeFormat;
+  onTimeFormatChange: (is24Hour: boolean) => void;
   timeZone?: string;
   seatsPerTimeSlot?: number;
   recurringEventCount?: number;
@@ -126,14 +131,12 @@ const SlotPicker = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>();
   const [browsingDate, setBrowsingDate] = useState<Dayjs>();
+  const { duration } = useRouterQuery("duration");
   const { date, setQuery: setDate } = useRouterQuery("date");
   const { month, setQuery: setMonth } = useRouterQuery("month");
   const router = useRouter();
-  const slotPickerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    slotPickerRef.current && autoAnimate(slotPickerRef.current);
-  }, [slotPickerRef]);
+  const [slotPickerRef] = useAutoAnimate<HTMLDivElement>();
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -154,7 +157,7 @@ const SlotPicker = ({
         setSelectedDate(dayjs.tz(date, timeZone));
       }
     }
-  }, [router.isReady, month, date, timeZone]);
+  }, [router.isReady, month, date, duration, timeZone]);
 
   const { i18n, isLocaleReady } = useLocale();
   const { slots: _1 } = useSlots({
@@ -164,6 +167,7 @@ const SlotPicker = ({
     startTime: selectedDate?.startOf("day"),
     endTime: selectedDate?.endOf("day"),
     timeZone,
+    duration,
   });
   const { slots: _2, isLoading } = useSlots({
     eventTypeId: eventType.id,
@@ -172,6 +176,7 @@ const SlotPicker = ({
     startTime: browsingDate?.startOf("month"),
     endTime: browsingDate?.endOf("month"),
     timeZone,
+    duration,
   });
 
   const slots = useMemo(() => ({ ..._2, ..._1 }), [_1, _2]);
@@ -203,6 +208,7 @@ const SlotPicker = ({
           slots={selectedDate && slots[selectedDate.format("YYYY-MM-DD")]}
           date={selectedDate}
           timeFormat={timeFormat}
+          onTimeFormatChange={onTimeFormatChange}
           eventTypeId={eventType.id}
           eventTypeSlug={eventType.slug}
           seatsPerTimeSlot={seatsPerTimeSlot}
@@ -215,24 +221,13 @@ const SlotPicker = ({
 };
 
 function TimezoneDropdown({
-  onChangeTimeFormat,
   onChangeTimeZone,
   timeZone,
-  timeFormat,
-  hideTimeFormatToggle,
 }: {
-  onChangeTimeFormat: (newTimeFormat: string) => void;
   onChangeTimeZone: (newTimeZone: string) => void;
   timeZone?: string;
-  timeFormat: string;
-  hideTimeFormatToggle?: boolean;
 }) {
   const [isTimeOptionsOpen, setIsTimeOptionsOpen] = useState(false);
-
-  useEffect(() => {
-    handleToggle24hClock(!!getIs24hClockFromLocalStorage());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleSelectTimeZone = (newTimeZone: string) => {
     onChangeTimeZone(newTimeZone);
@@ -240,20 +235,16 @@ function TimezoneDropdown({
     setIsTimeOptionsOpen(false);
   };
 
-  const handleToggle24hClock = (is24hClock: boolean) => {
-    onChangeTimeFormat(is24hClock ? "HH:mm" : "h:mma");
-  };
-
   return (
     <Popover.Root open={isTimeOptionsOpen} onOpenChange={setIsTimeOptionsOpen}>
       <Popover.Trigger className="min-w-32 dark:text-darkgray-600 radix-state-open:bg-gray-200 dark:radix-state-open:bg-darkgray-200 group relative mb-2 -ml-2 inline-block rounded-md px-2 py-2 text-left text-gray-600">
-        <p className="text-sm font-medium">
-          <Icon.FiGlobe className="mr-[10px] ml-[2px] -mt-[2px] inline-block h-4 w-4" />
+        <p className="flex items-center text-sm font-medium">
+          <Icon.FiGlobe className="min-h-4 min-w-4 mr-[10px] ml-[2px] -mt-[2px] inline-block" />
           {timeZone}
           {isTimeOptionsOpen ? (
-            <Icon.FiChevronUp className="ml-1 inline-block h-4 w-4" />
+            <Icon.FiChevronUp className="min-h-4 min-w-4 ml-1 inline-block" />
           ) : (
-            <Icon.FiChevronDown className="ml-1 inline-block h-4 w-4" />
+            <Icon.FiChevronDown className="min-h-4 min-w-4 ml-1 inline-block" />
           )}
         </p>
       </Popover.Trigger>
@@ -262,12 +253,7 @@ function TimezoneDropdown({
           hideWhenDetached
           align="start"
           className="animate-fade-in-up absolute left-0 top-2 w-80 max-w-[calc(100vw_-_1.5rem)]">
-          <TimeOptions
-            onSelectTimeZone={handleSelectTimeZone}
-            onToggle24hClock={handleToggle24hClock}
-            timeFormat={timeFormat}
-            hideTimeFormatToggle={hideTimeFormatToggle}
-          />
+          <TimeOptions onSelectTimeZone={handleSelectTimeZone} />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
@@ -280,35 +266,11 @@ const dateQuerySchema = z.object({
   timeZone: z.string().optional().default(""),
 });
 
-const useRouterQuery = <T extends string>(name: T) => {
-  const router = useRouter();
-  const existingQueryParams = router.asPath.split("?")[1];
-
-  const urlParams = new URLSearchParams(existingQueryParams);
-  const query = Object.fromEntries(urlParams);
-
-  const setQuery = (newValue: string | number | null | undefined) => {
-    router.replace({ query: { ...router.query, [name]: newValue } }, undefined, { shallow: true });
-    router.replace({ query: { ...router.query, ...query, [name]: newValue } }, undefined, { shallow: true });
-  };
-
-  return { [name]: query[name], setQuery } as {
-    [K in T]: string | undefined;
-  } & { setQuery: typeof setQuery };
-};
-
 export type Props = AvailabilityTeamPageProps | AvailabilityPageProps | DynamicAvailabilityPageProps;
 
-const timeFormatTotimeFormatString = (timeFormat?: number | null) => {
-  if (!timeFormat) return null;
-  return timeFormat === 24 ? "HH:mm" : "h:mma";
-};
-
-const AvailabilityPage = ({ profile, eventType }: Props) => {
-  const { data: user } = trpc.useQuery(["viewer.me"]);
-  const timeFormatFromProfile = timeFormatTotimeFormatString(user?.timeFormat);
+const AvailabilityPage = ({ profile, eventType, ...restProps }: Props) => {
   const router = useRouter();
-  const isEmbed = useIsEmbed();
+  const isEmbed = useIsEmbed(restProps.isEmbed);
   const query = dateQuerySchema.parse(router.query);
   const { rescheduleUid } = query;
   useTheme(profile.theme);
@@ -319,7 +281,12 @@ const AvailabilityPage = ({ profile, eventType }: Props) => {
   const isBackgroundTransparent = useIsBackgroundTransparent();
 
   const [timeZone, setTimeZone] = useState<string>();
-  const [timeFormat, setTimeFormat] = useState<string>("HH:mm");
+  const [timeFormat, setTimeFormat] = useState<TimeFormat>(detectBrowserTimeFormat);
+
+  const onTimeFormatChange = (is24Hours: boolean) => {
+    setTimeFormat(is24Hours ? TimeFormat.TWENTY_FOUR_HOUR : TimeFormat.TWELVE_HOUR);
+    setIs24hClockInLocalStorage(is24Hours);
+  };
 
   const [gateState, gateDispatcher] = useReducer(
     (state: GateState, newState: Partial<GateState>) => ({
@@ -331,8 +298,7 @@ const AvailabilityPage = ({ profile, eventType }: Props) => {
 
   useEffect(() => {
     setTimeZone(localStorageTimeZone() || dayjs.tz.guess());
-    setTimeFormat(timeFormatFromProfile || detectBrowserTimeFormat);
-  }, [timeFormatFromProfile]);
+  }, []);
 
   // TODO: Improve this;
   useExposePlanGlobally(eventType.users.length === 1 ? eventType.users[0].plan : "PRO");
@@ -354,18 +320,8 @@ const AvailabilityPage = ({ profile, eventType }: Props) => {
   const userList = eventType.users ? eventType.users.map((user) => user.username).filter(notEmpty) : [];
 
   const timezoneDropdown = useMemo(
-    () => (
-      <TimezoneDropdown
-        timeFormat={timeFormat}
-        onChangeTimeFormat={setTimeFormat}
-        timeZone={timeZone}
-        onChangeTimeZone={setTimeZone}
-        // Currently we don't allow the user to change the timeformat when they're logged in,
-        // the only way to change it is if they go to their profile.
-        hideTimeFormatToggle={!!timeFormatFromProfile}
-      />
-    ),
-    [timeZone, timeFormat, timeFormatFromProfile]
+    () => <TimezoneDropdown timeZone={timeZone} onChangeTimeZone={setTimeZone} />,
+    [timeZone]
   );
   const stripeAppData = getStripeAppData(eventType);
   const rainbowAppData = getEventTypeAppData(eventType, "rainbow") || {};
@@ -423,7 +379,7 @@ const AvailabilityPage = ({ profile, eventType }: Props) => {
                 <div
                   className={classNames(
                     "sm:dark:border-darkgray-200 flex flex-col border-gray-200 p-5 sm:border-r",
-                    "min-w-full md:w-[280px] md:min-w-[280px]",
+                    "min-w-full md:w-[230px] md:min-w-[230px]",
                     recurringEventCount && "xl:w-[380px] xl:min-w-[380px]"
                   )}>
                   <BookingDescription profile={profile} eventType={eventType} rescheduleUid={rescheduleUid}>
@@ -503,6 +459,7 @@ const AvailabilityPage = ({ profile, eventType }: Props) => {
                   }
                   eventType={eventType}
                   timeFormat={timeFormat}
+                  onTimeFormatChange={onTimeFormatChange}
                   timeZone={timeZone}
                   users={userList}
                   seatsPerTimeSlot={eventType.seatsPerTimeSlot || undefined}

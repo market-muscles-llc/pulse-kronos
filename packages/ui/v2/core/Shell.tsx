@@ -458,9 +458,9 @@ function UserPresenceSwitch({ small }: { small?: boolean }) {
   const { t } = useLocale();
   const query = useMeQuery();
   const user = query.data;
-  const mutation = trpc.useMutation("viewer.away", {
+  const mutation = trpc.viewer.away.useMutation({
     onSettled() {
-      utils.invalidateQueries("viewer.me");
+      utils.viewer.me.invalidate();
     },
   });
   const utils = trpc.useContext();
@@ -482,7 +482,7 @@ function UserPresenceSwitch({ small }: { small?: boolean }) {
       <button
         onClick={() => {
           mutation.mutate({ away: !user?.away });
-          utils.invalidateQueries("viewer.me");
+          utils.viewer.me.invalidate();
         }}
         className="flex w-full cursor-pointer items-center p-2 text-sm hover:bg-gray-100 hover:text-gray-900">
         <Icon.FiMoon

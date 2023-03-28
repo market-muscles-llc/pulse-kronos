@@ -215,11 +215,14 @@ const ProfileView = () => {
       <Form
         form={formMethods}
         handleSubmit={(values) => {
-          if (values.email !== user?.email && isCALIdentityProviver) {
-            setConfirmPasswordOpen(true);
-          } else {
-            mutation.mutate(values);
-          }
+          // if (values.email !== user?.email && isCALIdentityProviver) {
+          //   setConfirmPasswordOpen(false);
+          // } else {
+          //   mutation.mutate(values);
+          // }
+
+          // skip confirm password dialog in all cases
+          mutation.mutate(values);
         }}>
         <Meta title="Profile" description="Manage settings for your cal profile" />
         <div className="flex items-center">
@@ -267,7 +270,7 @@ const ProfileView = () => {
           <TextField label={t("full_name")} {...formMethods.register("name")} />
         </div>
         <div className="mt-8">
-          <TextField label={t("email")} hint={t("change_email_hint")} {...formMethods.register("email")} />
+          <TextField label={t("email")} {...formMethods.register("email")} />
         </div>
         <div className="mt-8">
           <TextField label={t("about")} hint={t("bio_hint")} {...formMethods.register("bio")} />
